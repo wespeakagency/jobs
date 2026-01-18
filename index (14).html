@@ -1,0 +1,832 @@
+
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>WeSpeak | Join The Noise</title>
+    
+    <!-- Librerías Externas (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Configuración Tailwind -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Montserrat', 'sans-serif'],
+              mono: ['monospace'],
+              display: ['Montserrat', 'sans-serif'],
+            },
+            colors: {
+              'ws-black': '#050505',
+              'ws-offblack': '#0a0a0a',
+            },
+            boxShadow: {
+              'glow': '0 0 20px rgba(255, 255, 255, 0.15)',
+              'glow-blue': '0 0 20px rgba(37, 99, 235, 0.3)',
+              'glow-red': '0 0 20px rgba(220, 38, 38, 0.3)',
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+      body { background-color: #050505; color: #ffffff; overflow: hidden; margin: 0; }
+      
+      /* Scrollbar Personalizado */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #050505; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: #fff; }
+
+      /* Efectos Visuales */
+      .text-glow { text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+      .stroke-text { -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15); color: transparent; }
+      
+      /* Sistema de Transiciones CSS (Reemplazo de Framer Motion) */
+      #app {
+          transition: opacity 0.3s ease, transform 0.3s ease;
+          opacity: 1;
+          transform: scale(1);
+      }
+      .fade-out {
+          opacity: 0 !important;
+          transform: scale(0.98) !important;
+          pointer-events: none;
+      }
+      .fade-in {
+          opacity: 1 !important;
+          transform: scale(1) !important;
+      }
+
+      /* Utilidades de Animación */
+      .slide-up { animation: slideUp 0.5s ease forwards; opacity: 0; transform: translateY(20px); }
+      @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+      
+      .dev-line:hover { background-color: rgba(255,255,255,0.05); }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "framer-motion": "https://esm.sh/framer-motion@^12.27.0",
+    "jspdf": "https://esm.sh/jspdf@^4.0.0"
+  }
+}
+</script>
+</head>
+<body>
+    
+    <!-- Contenedor Principal de la App -->
+    <div id="app" class="h-screen w-full relative">
+        <!-- El contenido se inyecta vía JavaScript -->
+    </div>
+
+    <!-- Overlay de Ruido (Noise) -->
+    <div class="fixed inset-0 pointer-events-none z-[9999] opacity-[0.03] mix-blend-overlay">
+        <svg class="w-full h-full">
+           <filter id="noiseFilter">
+               <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+           </filter>
+           <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+        </svg>
+    </div>
+
+<script>
+    /**
+     * ==========================================
+     * CONFIGURACIÓN & DATOS
+     * ==========================================
+     */
+    const ROLES = [
+      {
+        id: 'developer',
+        title: 'Programador Freelance',
+        subtitle: 'The Architect',
+        description: 'Buscamos a alguien resolutivo. No un arquitecto de la NASA, sino alguien que domestique código de IA y conecte APIs.',
+        salary: '$4,000 – $6,000 MXN / Mes',
+        responsibilities: [
+          'Limpieza y optimización de código IA',
+          'Conexiones API / Webhooks',
+          'Integraciones (Make/Zapier)',
+          'Mantenimiento Web'
+        ],
+        requirements: [
+          'Frontend/Backend Básico',
+          'Domar código IA',
+          'Mentalidad: Resolver > Complicar'
+        ]
+      },
+      {
+        id: 'creator',
+        title: 'Creador Contenido Jr.',
+        subtitle: 'The Visualist',
+        description: 'Pensar, grabar, editar, diseñar. Entender cómo se mueve el contenido hoy. Sin scripts aburridos.',
+        salary: '$9,000 – $12,000 MXN / Mes',
+        responsibilities: [
+          'Proponer ideas (Reels/TikTok)',
+          'Edición dinámica vertical',
+          'Diseño gráfico básico',
+          'Adaptar tendencias'
+        ],
+        requirements: [
+          'Edición (CapCut/Premiere)',
+          'Buen ojo visual',
+          'Entender hooks y storytelling',
+          'Organización'
+        ]
+      }
+    ];
+
+    const COMMON_QUESTIONS = [
+      { id: 'name', label: 'Identify Yourself', placeholder: 'Tu nombre completo', type: 'text' },
+      { id: 'email', label: 'Communication Channel', placeholder: 'correo@ejemplo.com', type: 'text' },
+      { id: 'phone', label: 'Direct Line (WhatsApp)', placeholder: '+52...', type: 'text' },
+      { id: 'portfolio', label: 'Proof of Work', placeholder: 'Link a tu Portfolio / LinkedIn', type: 'text' },
+    ];
+
+    const DEV_QUESTIONS = [
+      { id: 'tech_stack', label: 'Main Stack Definition', type: 'text', placeholder: 'Ej: React, Node, Python...' },
+      { id: 'ai_experience', label: 'AI Symbiosis Level', type: 'select', options: ['Nula', 'Básica (ChatGPT copy-paste)', 'Intermedia (Cursor/Copilot)', 'Avanzada (Refactorizo y optimizo)'] },
+      { id: 'integration_example', label: 'Execute Function: Cool_Automation()', type: 'textarea', placeholder: 'Cuéntanos de una integración o automatización cool que hayas hecho...' }
+    ];
+
+    const CREATOR_QUESTIONS = [
+      { id: 'tools', label: 'Weapon of Choice', type: 'text', placeholder: 'Ej: CapCut, Premiere, Canva, After Effects...' },
+      { id: 'best_video', label: 'The Masterpiece', type: 'text', placeholder: 'Link a tu mejor video URL (TikTok/Reel/Drive)' },
+      { id: 'trend_check', label: 'Vibe Check: Trends', type: 'textarea', placeholder: '¿Qué tendencia actual odias y cuál amas?' }
+    ];
+
+    /**
+     * ==========================================
+     * ESTADO GLOBAL (STATE MANAGEMENT)
+     * ==========================================
+     */
+    const State = {
+        view: 'intro', // intro, detail, application
+        selectedRole: null,
+        detailState: {
+            devFile: 'mission', // mission, stack, offer
+            creatorScene: 0
+        },
+        appFlowState: {
+            step: 0,
+            answers: {},
+            isCompleted: false
+        }
+    };
+
+    /**
+     * ==========================================
+     * MOTOR DE RENDERIZADO
+     * ==========================================
+     */
+    
+    // Iniciar App
+    window.onload = () => {
+        render();
+    };
+
+    function render() {
+        const app = document.getElementById('app');
+        
+        // Efecto de transición (Fade Out)
+        app.classList.add('fade-out');
+
+        setTimeout(() => {
+            app.innerHTML = ''; // Limpiar DOM
+            
+            // Router Básico
+            if (State.view === 'intro') {
+                app.innerHTML = getIntroHTML();
+                attachIntroListeners();
+            } else if (State.view === 'detail') {
+                if (State.selectedRole === 'developer') {
+                    app.innerHTML = getDevOSHTML();
+                    attachDevOSListeners();
+                } else {
+                    app.innerHTML = getCreatorStudioHTML();
+                    attachCreatorListeners();
+                }
+            } else if (State.view === 'application') {
+                app.innerHTML = getApplicationHTML();
+                attachApplicationListeners();
+            }
+
+            // Reinicializar Iconos Lucide
+            lucide.createIcons();
+            
+            // Efecto de transición (Fade In)
+            app.classList.remove('fade-out');
+            app.classList.add('fade-in');
+        }, 300); // 300ms delay para la transición
+    }
+
+    /**
+     * ==========================================
+     * VISTA: INTRODUCCIÓN (SPLIT SCREEN)
+     * ==========================================
+     */
+    function getIntroHTML() {
+        return `
+        <div class="relative w-full h-screen flex flex-col md:flex-row overflow-hidden bg-ws-black">
+             <!-- Logo Header -->
+             <div class="absolute top-8 left-0 w-full z-20 flex justify-center pointer-events-none mix-blend-difference">
+                <img src="https://raw.githubusercontent.com/ryandoelsol/wespeak/Pagina-web/logowespeak.png" alt="WeSpeak" class="w-24 opacity-80" />
+             </div>
+
+             <!-- Lado Developer -->
+             <div id="intro-dev" class="relative flex-1 h-1/2 md:h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer group border-b md:border-b-0 md:border-r border-white/10 overflow-hidden">
+                <div class="absolute inset-0 bg-blue-950/20 group-hover:bg-blue-900/30 transition-colors duration-500"></div>
+                <div class="absolute inset-0 overflow-hidden opacity-10 group-hover:opacity-20 transition-opacity">
+                    <div class="font-mono text-[10px] leading-3 text-blue-500 p-4 break-all">
+                        ${Array(100).fill("function_optimize(AI) { return 'future'; } // ").join(' ')}
+                    </div>
+                </div>
+                <div class="relative z-10 h-full flex flex-col justify-center items-center p-8 text-center">
+                    <div class="mb-6 p-4 rounded-2xl bg-white/5 border border-white/10 text-blue-400 group-hover:text-blue-300 shadow-glow-blue transition-all transform group-hover:scale-110">
+                        <i data-lucide="terminal" width="48" height="48"></i>
+                    </div>
+                    <h2 class="text-4xl md:text-6xl font-display font-black tracking-tighter text-white mb-2 group-hover:text-glow transition-all">THE ARCHITECT</h2>
+                    <p class="text-blue-200/60 font-mono text-xs md:text-sm tracking-[0.2em] uppercase">Logic • Code • Structure</p>
+                    <div class="mt-8 transition-all duration-500 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0">
+                       <span class="flex items-center gap-2 text-sm font-bold border border-blue-500/50 px-6 py-2 rounded-full text-blue-300">
+                          Enter System <i data-lucide="arrow-right" width="14"></i>
+                       </span>
+                    </div>
+                </div>
+             </div>
+
+             <!-- Lado Creator -->
+             <div id="intro-creator" class="relative flex-1 h-1/2 md:h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer group overflow-hidden">
+                <div class="absolute inset-0 bg-red-950/20 group-hover:bg-red-900/30 transition-colors duration-500"></div>
+                <div class="absolute inset-0 overflow-hidden opacity-10 group-hover:opacity-20 transition-opacity">
+                    <div class="w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat opacity-50 mix-blend-overlay"></div>
+                </div>
+                <div class="relative z-10 h-full flex flex-col justify-center items-center p-8 text-center">
+                    <div class="mb-6 p-4 rounded-2xl bg-white/5 border border-white/10 text-red-400 group-hover:text-red-300 shadow-glow-red transition-all transform group-hover:scale-110">
+                        <i data-lucide="aperture" width="48" height="48"></i>
+                    </div>
+                    <h2 class="text-4xl md:text-6xl font-display font-black tracking-tighter text-white mb-2 group-hover:text-glow transition-all">THE VISUALIST</h2>
+                    <p class="text-red-200/60 font-mono text-xs md:text-sm tracking-[0.2em] uppercase">Magic • Edit • Flow</p>
+                    <div class="mt-8 transition-all duration-500 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0">
+                       <span class="flex items-center gap-2 text-sm font-bold border border-red-500/50 px-6 py-2 rounded-full text-red-300">
+                          Start Recording <i data-lucide="arrow-right" width="14"></i>
+                       </span>
+                    </div>
+                </div>
+             </div>
+        </div>
+        `;
+    }
+
+    function attachIntroListeners() {
+        const devSide = document.getElementById('intro-dev');
+        const creatorSide = document.getElementById('intro-creator');
+
+        // Lógica de Hover para expandir paneles
+        const expandDev = () => {
+            devSide.classList.remove('md:flex-1'); devSide.classList.add('md:flex-[1.5]');
+            creatorSide.classList.remove('md:flex-1'); creatorSide.classList.add('md:flex-[0.5]');
+        };
+        const resetLayout = () => {
+            devSide.classList.remove('md:flex-[1.5]', 'md:flex-[0.5]'); devSide.classList.add('md:flex-1');
+            creatorSide.classList.remove('md:flex-[1.5]', 'md:flex-[0.5]'); creatorSide.classList.add('md:flex-1');
+        };
+        const expandCreator = () => {
+            creatorSide.classList.remove('md:flex-1'); creatorSide.classList.add('md:flex-[1.5]');
+            devSide.classList.remove('md:flex-1'); devSide.classList.add('md:flex-[0.5]');
+        };
+
+        devSide.addEventListener('mouseenter', expandDev);
+        devSide.addEventListener('mouseleave', resetLayout);
+        creatorSide.addEventListener('mouseenter', expandCreator);
+        creatorSide.addEventListener('mouseleave', resetLayout);
+
+        // Click Events
+        devSide.addEventListener('click', () => {
+            State.selectedRole = 'developer';
+            State.view = 'detail';
+            State.detailState.devFile = 'mission';
+            render();
+        });
+
+        creatorSide.addEventListener('click', () => {
+            State.selectedRole = 'creator';
+            State.view = 'detail';
+            State.detailState.creatorScene = 0;
+            render();
+        });
+    }
+
+    /**
+     * ==========================================
+     * VISTA: DETALLE DEVELOPER (DevOS)
+     * ==========================================
+     */
+    function getDevOSHTML() {
+        const role = ROLES.find(r => r.id === 'developer');
+        const activeFile = State.detailState.devFile;
+        let contentHTML = '';
+
+        // Helper para lineas de código
+        const line = (num, content, color = "text-gray-300") => `
+            <div class="flex gap-4 leading-relaxed hover:bg-white/5 dev-line slide-up" style="animation-delay: ${num * 50}ms">
+                <span class="w-8 text-right text-gray-600 select-none text-xs pt-1">${num}</span>
+                <span class="${color} font-mono text-sm whitespace-pre-wrap">${content}</span>
+            </div>`;
+
+        if (activeFile === 'mission') {
+            contentHTML += line(1, `# ${role.title.toUpperCase()}`, "text-blue-400 font-bold");
+            contentHTML += line(2, "");
+            contentHTML += line(3, "> MISSION BRIEF:", "text-purple-400");
+            contentHTML += line(4, `  "${role.description}"`);
+            contentHTML += line(5, "");
+            contentHTML += line(6, "## RESPONSIBILITIES", "text-blue-400");
+            role.responsibilities.forEach((r, i) => contentHTML += line(7+i, `- [ ] ${r}`));
+        } else if (activeFile === 'stack') {
+            contentHTML += line(1, "{", "text-yellow-500");
+            contentHTML += line(2, `  "role": "${role.subtitle}",`, "text-green-400");
+            contentHTML += line(3, `  "requirements": [`, "text-yellow-500");
+            role.requirements.forEach((r, i) => contentHTML += line(4+i, `    "${r}",`, "text-orange-300"));
+            let nextLine = 4 + role.requirements.length;
+            contentHTML += line(nextLine, `  ],`, "text-yellow-500");
+            contentHTML += line(nextLine + 1, `  "culture_fit": "Resolver > Complicar"`, "text-green-400");
+            contentHTML += line(nextLine + 2, "}", "text-yellow-500");
+        } else if (activeFile === 'offer') {
+             contentHTML += line(1, "salary:", "text-red-400");
+             contentHTML += line(2, `  value: ${role.salary}`);
+             contentHTML += line(3, "benefits:", "text-red-400");
+             contentHTML += line(4, "  - Remote First");
+             contentHTML += line(5, "  - AI Tools Provided");
+             contentHTML += line(6, "  - No Legacy Code");
+             contentHTML += line(7, "");
+             contentHTML += line(8, "# READY TO DEPLOY?", "text-gray-500 italic");
+        }
+
+        return `
+        <div class="min-h-screen bg-[#0d1117] text-gray-300 font-mono flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <div class="h-10 bg-[#161b22] border-b border-gray-800 flex items-center px-4 justify-between select-none">
+                <div class="flex items-center gap-4">
+                    <div class="flex gap-2">
+                        <button id="dev-back-btn" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400"></button>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span class="text-xs text-gray-500">wespeak_recruitment — -bash — 80x24</span>
+                </div>
+                <a href="https://wespeak.mx" class="text-xs hover:text-white transition-colors text-gray-600">exit_to_host()</a>
+            </div>
+
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Sidebar -->
+                <div class="w-64 bg-[#0d1117] border-r border-gray-800 flex flex-col hidden md:flex">
+                    <div class="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Explorer</div>
+                    <div class="flex-1 px-2">
+                        <div class="flex items-center gap-1 text-blue-400 mb-2 text-sm">
+                             <i data-lucide="chevron-right" class="rotate-90 w-3 h-3"></i> <span>PROJECT_WESPEAK</span>
+                        </div>
+                        <div class="pl-4 space-y-1">
+                            <button class="file-btn w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${activeFile === 'mission' ? 'bg-[#1f2937] text-white' : 'text-gray-400 hover:bg-[#161b22]'}" data-file="mission">
+                                <i data-lucide="file-code" width="14"></i> mission_brief.md
+                            </button>
+                            <button class="file-btn w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${activeFile === 'stack' ? 'bg-[#1f2937] text-white' : 'text-gray-400 hover:bg-[#161b22]'}" data-file="stack">
+                                <i data-lucide="cpu" width="14"></i> system_reqs.json
+                            </button>
+                            <button class="file-btn w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${activeFile === 'offer' ? 'bg-[#1f2937] text-white' : 'text-gray-400 hover:bg-[#161b22]'}" data-file="offer">
+                                <i data-lucide="dollar-sign" width="14"></i> compensation.yml
+                            </button>
+                            <button id="dev-apply-sidebar" class="w-full flex items-center gap-2 px-3 py-2 rounded text-sm text-green-400 hover:bg-[#161b22] animate-pulse">
+                                <i data-lucide="terminal" width="14"></i> run_apply.sh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-gray-800 text-[10px] text-gray-600">
+                        <div>STATUS: ONLINE</div>
+                        <div>BRANCH: main</div>
+                    </div>
+                </div>
+
+                <!-- Main Area -->
+                <div class="flex-1 bg-[#0d1117] flex flex-col relative">
+                    <!-- Tabs -->
+                    <div class="flex bg-[#010409]">
+                         <button class="file-btn px-4 py-2 text-xs border-r border-gray-800 flex items-center gap-2 ${activeFile === 'mission' ? 'bg-[#0d1117] text-white border-t-2 border-t-blue-500' : 'text-gray-500 bg-[#161b22]'}" data-file="mission">
+                            mission_brief.md ${activeFile === 'mission' ? '<i data-lucide="x" width="12" class="ml-2"></i>' : ''}
+                         </button>
+                         <button class="file-btn px-4 py-2 text-xs border-r border-gray-800 flex items-center gap-2 ${activeFile === 'stack' ? 'bg-[#0d1117] text-white border-t-2 border-t-blue-500' : 'text-gray-500 bg-[#161b22]'}" data-file="stack">
+                            system_reqs.json ${activeFile === 'stack' ? '<i data-lucide="x" width="12" class="ml-2"></i>' : ''}
+                         </button>
+                         <button class="file-btn px-4 py-2 text-xs border-r border-gray-800 flex items-center gap-2 ${activeFile === 'offer' ? 'bg-[#0d1117] text-white border-t-2 border-t-blue-500' : 'text-gray-500 bg-[#161b22]'}" data-file="offer">
+                            compensation.yml ${activeFile === 'offer' ? '<i data-lucide="x" width="12" class="ml-2"></i>' : ''}
+                         </button>
+                    </div>
+                    <!-- Editor -->
+                    <div class="flex-1 p-8 overflow-y-auto custom-scrollbar">
+                        <div class="max-w-3xl">${contentHTML}</div>
+                    </div>
+                    <!-- Terminal Footer -->
+                    <div class="h-12 bg-[#161b22] border-t border-gray-800 flex items-center px-4 gap-4">
+                        <span class="text-green-500 text-sm">➜</span>
+                        <span class="text-blue-400 text-sm">~/wespeak/careers</span>
+                        <span class="text-gray-400 text-sm flex-1">$ <span class="animate-pulse">_</span></span>
+                        <button id="dev-apply-btn" class="bg-green-600 hover:bg-green-500 text-white px-4 py-1 rounded text-xs font-bold transition-colors">EXECUTE APPLY</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function attachDevOSListeners() {
+        document.getElementById('dev-back-btn').addEventListener('click', () => { State.view = 'intro'; render(); });
+        
+        document.querySelectorAll('.file-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                State.detailState.devFile = e.currentTarget.dataset.file;
+                render();
+            });
+        });
+
+        const startApply = () => {
+            State.view = 'application';
+            State.appFlowState.step = 0;
+            State.appFlowState.answers = {};
+            State.appFlowState.isCompleted = false;
+            render();
+        };
+
+        document.getElementById('dev-apply-btn').addEventListener('click', startApply);
+        document.getElementById('dev-apply-sidebar').addEventListener('click', startApply);
+    }
+
+    /**
+     * ==========================================
+     * VISTA: DETALLE CREATOR (Creator Studio)
+     * ==========================================
+     */
+    function getCreatorStudioHTML() {
+        const role = ROLES.find(r => r.id === 'creator');
+        const sceneIndex = State.detailState.creatorScene;
+        const scenes = [
+            { id: 'intro', title: 'THE VISION', subtitle: 'Scene 1' },
+            { id: 'mission', title: 'THE ACTION', subtitle: 'Scene 2' },
+            { id: 'reqs', title: 'THE TOOLKIT', subtitle: 'Scene 3' },
+            { id: 'offer', title: 'THE PAYOFF', subtitle: 'Final Cut' },
+        ];
+
+        let content = '';
+        if (sceneIndex === 0) {
+            content = `
+                <div class="slide-up">
+                    <h1 class="text-6xl md:text-9xl font-black italic tracking-tighter mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">${role.title.toUpperCase()}</h1>
+                    <p class="text-xl md:text-3xl font-light text-gray-300 max-w-3xl mx-auto leading-relaxed">"${role.description}"</p>
+                </div>`;
+        } else if (sceneIndex === 1) {
+            content = `
+                <div class="text-left slide-up">
+                    <h2 class="text-4xl md:text-7xl font-black mb-12 stroke-text text-white">YOUR MISSION</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        ${role.responsibilities.map(r => `
+                            <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                                <i data-lucide="aperture" class="mb-4 text-red-500"></i>
+                                <p class="text-xl font-medium text-white">${r}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+        } else if (sceneIndex === 2) {
+             content = `
+                <div class="slide-up">
+                    <h2 class="text-4xl md:text-7xl font-black mb-12 text-white">REQUIREMENTS</h2>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        ${role.requirements.map(r => `
+                            <span class="px-8 py-4 bg-red-600 rounded-full text-xl md:text-2xl font-bold uppercase tracking-widest text-white shadow-glow-red">${r}</span>
+                        `).join('')}
+                    </div>
+                </div>`;
+        } else if (sceneIndex === 3) {
+            content = `
+                <div class="slide-up">
+                    <h2 class="text-2xl font-bold uppercase tracking-[0.5em] mb-4 text-gray-400">Monthly Compensation</h2>
+                    <div class="text-5xl md:text-8xl font-black text-white mb-12">${role.salary}</div>
+                    <button id="creator-start-rec" class="px-12 py-6 bg-white text-black text-2xl font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-[0_0_50px_rgba(255,255,255,0.5)]">START RECORDING</button>
+                    <div class="mt-8">
+                        <a href="https://wespeak.mx" class="text-sm text-gray-500 hover:text-white uppercase tracking-widest border-b border-transparent hover:border-white transition-all pb-1">Cancel & Return to Home</a>
+                    </div>
+                </div>`;
+        }
+
+        return `
+        <div class="h-screen w-full bg-black text-white overflow-hidden relative font-sans">
+             <!-- Viewfinder Overlay -->
+             <div class="absolute inset-0 z-20 pointer-events-none">
+                <div class="absolute top-8 left-8 w-8 h-8 border-t-2 border-l-2 border-white/50"></div>
+                <div class="absolute top-8 right-8 w-8 h-8 border-t-2 border-r-2 border-white/50"></div>
+                <div class="absolute bottom-24 left-8 w-8 h-8 border-b-2 border-l-2 border-white/50"></div>
+                <div class="absolute bottom-24 right-8 w-8 h-8 border-b-2 border-r-2 border-white/50"></div>
+                
+                <div class="absolute top-10 left-1/2 -translate-x-1/2 flex items-center gap-4 text-[10px] font-bold tracking-widest text-white/80 bg-black/20 backdrop-blur px-4 py-1 rounded-full">
+                    <span class="text-red-500 animate-pulse flex items-center gap-1"><i data-lucide="disc" width="8" fill="currentColor"></i> REC</span>
+                    <span>${scenes[sceneIndex].subtitle}</span>
+                    <span>ISO 800</span>
+                    <span>4K 60FPS</span>
+                    <span class="flex items-center gap-1"><i data-lucide="battery" width="10"></i> 100%</span>
+                </div>
+                
+                <div class="absolute top-10 right-10 z-30 pointer-events-auto">
+                    <button id="creator-close-btn" class="p-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md transition-all">
+                        <i data-lucide="x" width="20"></i>
+                    </button>
+                </div>
+             </div>
+
+             <!-- Main Content Stage -->
+             <div class="absolute inset-0 flex items-center justify-center p-6 md:p-20 z-10">
+                <div class="w-full max-w-4xl text-center">
+                    ${content}
+                </div>
+             </div>
+
+             <!-- Nav Controls -->
+             <div class="absolute bottom-8 left-0 w-full px-8 z-30 flex justify-between items-center">
+                <div class="flex gap-2">
+                    ${scenes.map((_, i) => `
+                        <div class="h-1 rounded-full transition-all duration-500 ${i === sceneIndex ? 'w-12 bg-white' : 'w-4 bg-white/20'}"></div>
+                    `).join('')}
+                </div>
+                <div class="flex gap-4">
+                    <button id="scene-prev" class="p-4 rounded-full border border-white/20 hover:bg-white/10 disabled:opacity-20 transition-all text-white" ${sceneIndex === 0 ? 'disabled' : ''}>
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                    <button id="scene-next" class="p-4 rounded-full bg-white text-black hover:bg-gray-200 disabled:opacity-0 disabled:pointer-events-none transition-all" ${sceneIndex === 3 ? 'disabled' : ''}>
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </div>
+             </div>
+             
+             <div class="absolute inset-0 bg-gradient-to-br from-red-900/20 via-black to-black -z-10"></div>
+        </div>`;
+    }
+
+    function attachCreatorListeners() {
+        document.getElementById('creator-close-btn').addEventListener('click', () => { State.view = 'intro'; render(); });
+        
+        const prevBtn = document.getElementById('scene-prev');
+        const nextBtn = document.getElementById('scene-next');
+        const startBtn = document.getElementById('creator-start-rec');
+
+        if(prevBtn && !prevBtn.disabled) prevBtn.addEventListener('click', () => { State.detailState.creatorScene--; render(); });
+        if(nextBtn && !nextBtn.disabled) nextBtn.addEventListener('click', () => { State.detailState.creatorScene++; render(); });
+        if(startBtn) startBtn.addEventListener('click', () => {
+             State.view = 'application';
+             State.appFlowState.step = 0;
+             State.appFlowState.answers = {};
+             State.appFlowState.isCompleted = false;
+             render();
+        });
+    }
+
+    /**
+     * ==========================================
+     * VISTA: FORMULARIO APLICACIÓN
+     * ==========================================
+     */
+    function getApplicationHTML() {
+        const { step, answers, isCompleted } = State.appFlowState;
+        const roleId = State.selectedRole;
+        const roleData = ROLES.find(r => r.id === roleId);
+        
+        const roleQuestions = roleId === 'developer' ? DEV_QUESTIONS : CREATOR_QUESTIONS;
+        const levels = [
+            { name: 'INIT_SEQUENCE', questions: COMMON_QUESTIONS },
+            { name: 'SKILL_SYNC', questions: roleQuestions },
+            { name: 'FINAL_COMPILE', questions: [{ id: 'why_wespeak', label: roleId === 'developer' ? 'Run Why_WeSpeak.exe' : 'Director\'s Cut Commentary', type: 'textarea', placeholder: '¿Por qué WeSpeak? (Sin rollos mareadores)' }] }
+        ];
+        const allQuestions = levels.flatMap(l => l.questions);
+        const currentQuestion = allQuestions[step];
+        const progress = ((step + 1) / allQuestions.length) * 100;
+
+        // PANTALLA EXITO
+        if (isCompleted) {
+            return `
+            <div class="fixed inset-0 z-[100] bg-black flex items-center justify-center p-6 slide-up">
+                 <div class="text-center p-8 max-w-2xl">
+                     <div class="w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center border-4 ${roleId === 'developer' ? 'border-blue-500 text-blue-500' : 'border-red-500 text-red-500'}">
+                         <i data-lucide="send" width="48" height="48"></i>
+                     </div>
+                     <h2 class="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">
+                         ${roleId === 'developer' ? 'SYSTEM COMPILED' : 'IT\'S A WRAP'}
+                     </h2>
+                     <p class="text-gray-400 mb-8 text-xl">
+                         El PDF se ha descargado en tu máquina. <br/>
+                         <span class="text-white">Envíanoslo para desbloquear el siguiente nivel.</span>
+                     </p>
+                     <div class="flex flex-col gap-4">
+                        <button id="final-send-email" class="px-12 py-5 rounded-full text-xl font-bold uppercase tracking-widest transition-all hover:scale-105 ${roleId === 'developer' ? 'bg-blue-600 text-white shadow-glow-blue' : 'bg-white text-black shadow-glow'}">
+                            ENVIAR AHORA
+                        </button>
+                        <a href="https://wespeak.mx" class="text-gray-500 hover:text-white transition-colors flex items-center justify-center gap-2 mt-4 text-sm font-bold uppercase tracking-widest">
+                            <i data-lucide="home" width="16"></i> Return to WeSpeak.mx
+                        </a>
+                     </div>
+                 </div>
+            </div>`;
+        }
+
+        // INPUTS
+        const isDev = roleId === 'developer';
+        const devInputClass = "w-full bg-transparent border-b-2 border-blue-500/50 text-blue-100 text-2xl md:text-4xl font-mono py-4 focus:outline-none focus:border-blue-400 placeholder-blue-900/50";
+        const creatorInputClass = "w-full bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 text-white text-2xl md:text-4xl font-sans font-light py-6 px-6 focus:outline-none focus:bg-white/10 focus:border-red-500/50 transition-all placeholder-white/20";
+
+        let inputHTML = '';
+        if (currentQuestion.type === 'select') {
+             inputHTML = `
+                <div class="grid grid-cols-1 gap-4 mt-8">
+                  ${currentQuestion.options.map(opt => `
+                    <div class="select-option p-4 border-2 ${isDev ? 'font-mono text-sm' : 'rounded-xl text-lg'} cursor-pointer transition-all ${answers[currentQuestion.id] === opt 
+                        ? (isDev ? 'border-blue-400 bg-blue-900/30 text-white' : 'bg-white text-black font-bold scale-105') 
+                        : (isDev ? 'border-blue-900/30 text-blue-500 hover:border-blue-500' : 'bg-white/5 text-gray-300 hover:bg-white/10')}" data-val="${opt}">
+                      <div class="flex items-center gap-3">
+                         ${isDev ? `<span class="text-blue-500">${answers[currentQuestion.id] === opt ? '[x]' : '[ ]'}</span>` : ''}
+                         ${opt}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>`;
+        } else if (currentQuestion.type === 'textarea') {
+            inputHTML = `<textarea id="app-input" class="${isDev ? devInputClass : creatorInputClass} resize-none h-40" placeholder="${currentQuestion.placeholder}">${answers[currentQuestion.id] || ''}</textarea>`;
+        } else {
+            inputHTML = `<input id="app-input" type="text" class="${isDev ? devInputClass : creatorInputClass}" placeholder="${currentQuestion.placeholder}" value="${answers[currentQuestion.id] || ''}" autofocus />`;
+        }
+
+        return `
+        <div class="fixed inset-0 z-50 overflow-hidden flex flex-col ${roleId === 'developer' ? 'bg-[#050a14]' : 'bg-[#0a0505]'}">
+            <!-- Header -->
+            <div class="relative z-10 flex justify-between items-center p-6 md:p-10">
+                 <div class="flex items-center gap-4">
+                     <i data-lucide="${roleId === 'developer' ? 'terminal' : 'aperture'}" class="${roleId === 'developer' ? 'text-blue-500' : 'text-red-500'}"></i>
+                     <span class="text-xs font-bold tracking-[0.3em] uppercase ${roleId === 'developer' ? 'text-blue-400 font-mono' : 'text-gray-400'}">
+                         Level ${Math.floor(step / 2) + 1} / 3
+                     </span>
+                 </div>
+                 <button id="app-close-btn" class="group p-2 rounded-full hover:bg-white/10 transition-colors">
+                     <i data-lucide="x" class="text-white/50 group-hover:text-white"></i>
+                 </button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 relative z-10 flex flex-col justify-center max-w-4xl mx-auto w-full px-6 md:px-0">
+                 <div class="slide-up">
+                     <label class="block text-sm md:text-base mb-6 md:mb-8 font-bold uppercase tracking-widest ${roleId === 'developer' ? 'text-blue-500 font-mono' : 'text-red-500'}">
+                         ${roleId === 'developer' ? `> ${currentQuestion.label}` : currentQuestion.label}
+                     </label>
+                     ${inputHTML}
+                 </div>
+
+                 <!-- Nav -->
+                 <div class="mt-12 flex items-center justify-between opacity-50">
+                     <div class="text-xs text-gray-500 uppercase tracking-widest">
+                         ${(currentQuestion.type !== 'textarea' && currentQuestion.type !== 'select') ? 
+                             `<span class="flex items-center gap-2">Press <span class="border border-gray-600 px-1 rounded text-[10px]">ENTER</span> to continue</span>` : ''}
+                     </div>
+                     ${(currentQuestion.type === 'textarea' || currentQuestion.type === 'select') ? `
+                         <button id="app-next-btn" class="flex items-center gap-2 px-6 py-2 rounded-full ${roleId === 'developer' ? 'bg-blue-900/50 text-blue-300' : 'bg-red-900/50 text-red-300'}">
+                             Next <i data-lucide="chevron-right" width="14"></i>
+                         </button>` : ''}
+                 </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="relative z-10 h-1 md:h-2 w-full bg-white/5">
+                 <div class="h-full transition-all duration-300 ${roleId === 'developer' ? 'bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]' : 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]'}" style="width: ${progress}%"></div>
+            </div>
+        </div>`;
+    }
+
+    function attachApplicationListeners() {
+        if (State.appFlowState.isCompleted) {
+             const sendBtn = document.getElementById('final-send-email');
+             if(sendBtn) sendBtn.addEventListener('click', () => {
+                 const roleId = State.selectedRole;
+                 const roleData = ROLES.find(r => r.id === roleId);
+                 const name = State.appFlowState.answers['name'] || 'Candidate';
+                 const subject = `[${roleId.toUpperCase()}] Application - ${name}`;
+                 const body = `Hola equipo WeSpeak,\n\nLevel complete. Adjunto mi PDF de aplicación para ${roleData.title}.\n\nPortfolio: ${State.appFlowState.answers['portfolio']}\n\n// End transmission`;
+                 window.location.href = `mailto:contacto@wespeak.mx?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+             });
+             return;
+        }
+
+        const roleQuestions = State.selectedRole === 'developer' ? DEV_QUESTIONS : CREATOR_QUESTIONS;
+        const levels = [
+            { name: 'INIT_SEQUENCE', questions: COMMON_QUESTIONS },
+            { name: 'SKILL_SYNC', questions: roleQuestions },
+            { name: 'FINAL_COMPILE', questions: [{ id: 'why_wespeak', label: 'Final thoughts', type: 'textarea' }] }
+        ];
+        const allQuestions = levels.flatMap(l => l.questions);
+        const currentQuestion = allQuestions[State.appFlowState.step];
+
+        // Close
+        document.getElementById('app-close-btn').addEventListener('click', () => { State.view = 'detail'; render(); });
+
+        // Input
+        const input = document.getElementById('app-input');
+        if (input) {
+            input.focus();
+            input.addEventListener('input', (e) => State.appFlowState.answers[currentQuestion.id] = e.target.value);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && currentQuestion.type !== 'textarea') handleNext(allQuestions);
+            });
+        }
+
+        // Select Options
+        document.querySelectorAll('.select-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                State.appFlowState.answers[currentQuestion.id] = e.currentTarget.dataset.val;
+                render();
+            });
+        });
+
+        // Next Btn
+        const nextBtn = document.getElementById('app-next-btn');
+        if (nextBtn) nextBtn.addEventListener('click', () => handleNext(allQuestions));
+    }
+
+    function handleNext(allQuestions) {
+        const currentQuestion = allQuestions[State.appFlowState.step];
+        if (!State.appFlowState.answers[currentQuestion.id]) return; // Validación simple
+
+        if (State.appFlowState.step < allQuestions.length - 1) {
+            State.appFlowState.step++;
+            render();
+        } else {
+            generatePDF(allQuestions);
+        }
+    }
+
+    function generatePDF(allQuestions) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const roleId = State.selectedRole;
+        const roleData = ROLES.find(r => r.id === roleId);
+        const answers = State.appFlowState.answers;
+        const margin = 20;
+        let yPos = 20;
+
+        // Estilos PDF
+        doc.setFillColor(roleId === 'developer' ? 10 : 200, roleId === 'developer' ? 10 : 0, roleId === 'developer' ? 30 : 0);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.text("WESPEAK APPLICATION", margin, 25);
+        doc.setFontSize(10);
+        doc.text(`ROLE: ${roleData.title.toUpperCase()}`, margin, 35);
+        
+        yPos = 60;
+        doc.setTextColor(0, 0, 0);
+
+        allQuestions.forEach((q) => {
+            if (yPos > 270) { doc.addPage(); yPos = 20; }
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(q.label.toUpperCase(), margin, yPos);
+            yPos += 7;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            
+            const txt = answers[q.id] || "N/A";
+            const splitTxt = doc.splitTextToSize(txt, 170);
+            doc.text(splitTxt, margin, yPos);
+            yPos += (splitTxt.length * 6) + 10;
+        });
+
+        doc.save(`WeSpeak_${roleId}_${answers['name'] || 'Candidate'}.pdf`);
+
+        setTimeout(() => {
+            State.appFlowState.isCompleted = true;
+            render();
+        }, 1500);
+    }
+</script>
+</body>
+</html>
