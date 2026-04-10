@@ -1,3007 +1,437 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WeSpeak | Join The Noise</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeSpeak - Creador de Contenido Jr</title>
+  
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Styles -->
   <style>
-    :root {
-      --bg: #050505;
-      --panel: rgba(255, 255, 255, 0.06);
-      --line: rgba(255, 255, 255, 0.1);
-      --muted: rgba(255, 255, 255, 0.6);
-      --muted-strong: rgba(255, 255, 255, 0.8);
-      --blue: #3b82f6;
-      --blue-soft: rgba(59, 130, 246, 0.18);
-      --red: #ef4444;
-      --red-soft: rgba(239, 68, 68, 0.18);
-      --purple: #a855f7;
-      --purple-soft: rgba(168, 85, 247, 0.18);
-      --shadow-white: 0 0 20px rgba(255, 255, 255, 0.45);
-      --shadow-blue: 0 0 20px rgba(59, 130, 246, 0.35);
-      --shadow-red: 0 0 20px rgba(239, 68, 68, 0.35);
-      --shadow-purple: 0 0 20px rgba(168, 85, 247, 0.35);
-      --font-sans: "Montserrat", sans-serif;
-      --font-mono: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", monospace;
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 16px;
-      --radius-sm: 12px;
-      --transition: 280ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
     body {
-      min-height: 100%;
-      margin: 0;
-      background: var(--bg);
-      color: #fff;
-      font-family: var(--font-sans);
+      background-color: #020202;
+      color: white;
+      font-family: 'Montserrat', sans-serif;
     }
-
-    body {
-      overflow: hidden;
+    ::selection {
+      background-color: white;
+      color: black;
     }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button,
-    input,
-    textarea {
-      font: inherit;
-      color: inherit;
-    }
-
-    button {
-      border: 0;
-      background: transparent;
-      padding: 0;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-    }
-
-    img {
-      display: block;
-      max-width: 100%;
-    }
-
-    strong {
-      font-weight: 800;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    #app {
-      min-height: 100vh;
-      position: relative;
-      isolation: isolate;
-    }
-
-    .grain-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      pointer-events: none;
-      opacity: 0.03;
-      mix-blend-mode: overlay;
-    }
-
-    .grain-overlay svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .fade-in {
-      animation: fade-in 0.6s ease both;
-    }
-
-    .slide-up {
-      animation: slide-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .pulse {
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    .text-glow {
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-    }
-
-    .stroke-text {
-      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
-      color: transparent;
-    }
-
-    .shake {
-      animation: shake 0.38s ease;
-    }
-
-    .intro-screen {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: #050505;
-      animation: fade-in 0.8s ease both;
-    }
-
-    .intro-logo {
-      position: absolute;
-      top: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      pointer-events: none;
-      mix-blend-mode: difference;
-    }
-
-    .intro-logo img {
-      width: 96px;
-      opacity: 0.82;
-    }
-
-    .intro-panel {
-      position: relative;
-      flex: 1 1 0;
-      min-height: 33.333vh;
-      padding: 2rem;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      transition: flex 700ms cubic-bezier(0.25, 1, 0.5, 1), transform var(--transition), background-color var(--transition);
-    }
-
-    .intro-panel:last-child {
-      border-bottom: 0;
-    }
-
-    .intro-panel__button {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .intro-panel__tone,
-    .intro-panel__pattern {
-      position: absolute;
-      inset: 0;
-    }
-
-    .intro-panel__tone {
-      transition: opacity 500ms ease, background-color 500ms ease;
-    }
-
-    .intro-panel__pattern {
-      opacity: 0.12;
-      transition: opacity 500ms ease;
-      overflow: hidden;
-    }
-
-    .intro-panel__content {
-      position: relative;
-      z-index: 2;
-      max-width: 34rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.7rem;
-    }
-
-    .icon-badge {
-      width: 86px;
-      height: 86px;
-      border-radius: 24px;
-      display: grid;
-      place-items: center;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      transition: transform 500ms ease, border-color 500ms ease, color 500ms ease, box-shadow 500ms ease;
-      margin-bottom: 1rem;
-    }
-
-    .intro-panel__title {
-      margin: 0;
-      font-weight: 900;
-      letter-spacing: -0.06em;
-      line-height: 0.92;
-      font-size: clamp(2.2rem, 5vw, 4.75rem);
-      text-transform: uppercase;
-      transition: text-shadow 500ms ease;
-    }
-
-    .intro-panel__meta {
-      margin: 0;
-      font-family: var(--font-mono);
-      font-size: clamp(0.72rem, 1vw, 0.85rem);
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-    }
-
-    .intro-panel__cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.8rem 1.3rem;
-      border-radius: 999px;
-      margin-top: 0;
-      max-height: 0;
-      opacity: 0;
-      overflow: hidden;
-      transform: translateY(0.5rem);
-      transition: max-height 400ms ease, opacity 400ms ease, margin-top 400ms ease, transform 400ms ease, border-color 400ms ease;
-      font-size: 0.92rem;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      white-space: nowrap;
-    }
-
-    .intro-panel.theme-developer .intro-panel__tone {
-      background: rgba(23, 37, 84, 0.25);
-    }
-
-    .intro-panel.theme-developer .icon-badge {
-      color: #60a5fa;
-      box-shadow: var(--shadow-blue);
-    }
-
-    .intro-panel.theme-developer .intro-panel__meta,
-    .intro-panel.theme-developer .intro-panel__cta {
-      color: rgba(191, 219, 254, 0.72);
-    }
-
-    .intro-panel.theme-developer .intro-panel__cta {
-      border: 1px solid rgba(59, 130, 246, 0.45);
-    }
-
-    .intro-panel.theme-creator .intro-panel__tone {
-      background: rgba(127, 29, 29, 0.22);
-    }
-
-    .intro-panel.theme-creator .icon-badge {
-      color: #f87171;
-      box-shadow: var(--shadow-red);
-    }
-
-    .intro-panel.theme-creator .intro-panel__meta,
-    .intro-panel.theme-creator .intro-panel__cta {
-      color: rgba(254, 202, 202, 0.72);
-    }
-
-    .intro-panel.theme-creator .intro-panel__cta {
-      border: 1px solid rgba(239, 68, 68, 0.45);
-    }
-
-    .intro-panel.theme-community .intro-panel__tone {
-      background: rgba(88, 28, 135, 0.22);
-    }
-
-    .intro-panel.theme-community .icon-badge {
-      color: #c084fc;
-      box-shadow: var(--shadow-purple);
-    }
-
-    .intro-panel.theme-community .intro-panel__meta,
-    .intro-panel.theme-community .intro-panel__cta {
-      color: rgba(233, 213, 255, 0.72);
-    }
-
-    .intro-panel.theme-community .intro-panel__cta {
-      border: 1px solid rgba(168, 85, 247, 0.45);
-    }
-
-    .intro-pattern-code {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      line-height: 1.2;
-      color: rgba(59, 130, 246, 0.7);
-      padding: 1rem;
-      word-break: break-all;
-    }
-
-    .intro-pattern-noise {
-      width: 100%;
-      height: 100%;
-      background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-      background-repeat: repeat;
-      background-size: 160px 160px;
-      opacity: 0.45;
-      mix-blend-mode: overlay;
-    }
-
-    .intro-pattern-dots {
-      width: 100%;
-      height: 100%;
-      background-image: radial-gradient(circle, rgba(168, 85, 247, 0.85) 1px, transparent 1px);
-      background-size: 20px 20px;
-    }
-
-    .developer-shell {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: #0d1117;
-      color: #c9d1d9;
-      font-family: var(--font-mono);
-      animation: fade-in 0.35s ease both;
-    }
-
-    .dev-topbar {
-      height: 40px;
-      background: #161b22;
-      border-bottom: 1px solid #26303a;
-      padding: 0 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-shrink: 0;
-    }
-
-    .dev-topbar-left,
-    .dev-traffic {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-    }
-
-    .dev-traffic {
-      gap: 0.5rem;
-    }
-
-    .dev-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .dev-dot.red {
-      background: #ef4444;
-    }
-
-    .dev-dot.yellow {
-      background: #f59e0b;
-    }
-
-    .dev-dot.green {
-      background: #22c55e;
-    }
-
-    .dev-host {
-      font-size: 0.72rem;
-      color: #6e7681;
-    }
-
-    .dev-exit {
-      font-size: 0.72rem;
-      color: #6e7681;
-      transition: color var(--transition);
-    }
-
-    .dev-exit:hover {
-      color: #fff;
-    }
-
-    .dev-body {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      overflow: hidden;
-    }
-
-    .dev-sidebar {
-      width: 264px;
-      background: #0d1117;
-      border-right: 1px solid #26303a;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-
-    .dev-sidebar-title,
-    .dev-footer {
-      padding: 1rem;
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: #6e7681;
-    }
-
-    .dev-explorer {
-      padding: 0 0.75rem 1rem;
-      min-height: 0;
-      overflow: auto;
-    }
-
-    .dev-tree-root {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.9rem;
-      color: #60a5fa;
-      margin-bottom: 0.6rem;
-    }
-
-    .dev-file-list {
-      padding-left: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-
-    .dev-file,
-    .dev-apply-file {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.72rem 0.85rem;
-      border-radius: 12px;
-      text-align: left;
-      font-size: 0.9rem;
-      color: #8b949e;
-      transition: background-color var(--transition), color var(--transition), border-color var(--transition);
-    }
-
-    .dev-file.active {
-      background: #1f2937;
-      color: #fff;
-    }
-
-    .dev-file:hover,
-    .dev-apply-file:hover {
-      background: #161b22;
-      color: #e5e7eb;
-    }
-
-    .dev-apply-file {
-      color: #4ade80;
-    }
-
-    .dev-footer {
-      border-top: 1px solid #26303a;
-      line-height: 1.6;
-    }
-
-    .dev-main {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      background: #0d1117;
-    }
-
-    .dev-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      background: #010409;
-      flex-shrink: 0;
-    }
-
-    .dev-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.8rem 1rem;
-      border-right: 1px solid #26303a;
-      border-top: 2px solid transparent;
-      background: #161b22;
-      color: #6e7681;
-      font-size: 0.75rem;
-      transition: color var(--transition), background-color var(--transition), border-color var(--transition);
-    }
-
-    .dev-tab.active {
-      background: #0d1117;
-      color: #fff;
-      border-top-color: #3b82f6;
-    }
-
-    .dev-tab-close {
-      display: inline-grid;
-      place-items: center;
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      color: #9ca3af;
-      transition: background-color var(--transition), color var(--transition);
-    }
-
-    .dev-tab-close:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-    }
-
-    .dev-content {
-      flex: 1;
-      min-height: 0;
-      padding: 2rem;
-      overflow: auto;
-    }
-
-    .code-view {
-      max-width: 50rem;
-    }
-
-    .code-line {
-      display: flex;
-      gap: 1rem;
-      line-height: 1.75;
-      transition: background-color var(--transition);
-    }
-
-    .code-line:hover {
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .code-num {
-      width: 2.1rem;
-      flex-shrink: 0;
-      text-align: right;
-      color: #6e7681;
-      font-size: 0.74rem;
-      padding-top: 0.12rem;
-      user-select: none;
-    }
-
-    .code-text {
-      white-space: pre-wrap;
-      font-size: 0.95rem;
-    }
-
-    .code-blue {
-      color: #60a5fa;
-      font-weight: 700;
-    }
-
-    .code-purple {
-      color: #c084fc;
-    }
-
-    .code-green {
-      color: #86efac;
-    }
-
-    .code-yellow {
-      color: #fcd34d;
-    }
-
-    .code-orange {
-      color: #fdba74;
-    }
-
-    .code-red {
-      color: #f87171;
-    }
-
-    .code-muted {
-      color: #8b949e;
-    }
-
-    .code-italic {
-      font-style: italic;
-    }
-
-    .dev-terminal {
-      height: 48px;
-      background: #161b22;
-      border-top: 1px solid #26303a;
-      padding: 0 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }
-
-    .dev-terminal-path {
-      color: #60a5fa;
-      font-size: 0.88rem;
-    }
-
-    .dev-terminal-line {
-      flex: 1;
-      color: #9ca3af;
-      font-size: 0.88rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .terminal-caret {
-      display: inline-block;
-      animation: blink 1.1s step-end infinite;
-    }
-
-    .dev-primary-btn {
-      padding: 0.55rem 1rem;
-      border-radius: 10px;
-      background: #16a34a;
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      transition: background-color var(--transition), transform var(--transition);
-    }
-
-    .dev-primary-btn:hover {
-      background: #22c55e;
-      transform: translateY(-1px);
-    }
-
-    .creator-shell {
-      position: relative;
-      min-height: 100vh;
-      overflow: hidden;
-      background: #000;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      animation: fade-in 0.35s ease both;
-    }
-
-    .creator-shell::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(127, 29, 29, 0.24), rgba(0, 0, 0, 0.8) 48%, rgba(0, 0, 0, 0.95));
-      z-index: 0;
-    }
-
-    .creator-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .view-corner {
-      position: absolute;
-      width: 34px;
-      height: 34px;
-      border-color: rgba(255, 255, 255, 0.5);
-      border-style: solid;
-    }
-
-    .view-corner.top-left {
-      top: 2rem;
-      left: 2rem;
-      border-width: 2px 0 0 2px;
-    }
-
-    .view-corner.top-right {
-      top: 2rem;
-      right: 2rem;
-      border-width: 2px 2px 0 0;
-    }
-
-    .view-corner.bottom-left {
-      bottom: 6rem;
-      left: 2rem;
-      border-width: 0 0 2px 2px;
-    }
-
-    .view-corner.bottom-right {
-      bottom: 6rem;
-      right: 2rem;
-      border-width: 0 2px 2px 0;
-    }
-
-    .creator-hud {
-      position: absolute;
-      top: 2.2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.45rem 1rem;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(10px);
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-
-    .creator-hud-rec {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      color: #ef4444;
-    }
-
-    .creator-close {
-      position: absolute;
-      top: 2rem;
-      right: 2rem;
-      width: 46px;
-      height: 46px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      pointer-events: auto;
-      transition: background-color var(--transition), transform var(--transition);
-    }
-
-    .creator-close:hover {
-      background: rgba(255, 255, 255, 0.14);
-      transform: translateY(-1px);
-    }
-
-    .creator-stage {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: clamp(1.5rem, 4vw, 5rem);
-    }
-
-    .creator-scene {
-      width: min(100%, 1080px);
-      animation: scene-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .creator-hero {
-      text-align: center;
-    }
-
-    .creator-hero-title {
-      margin: 0 0 1.5rem;
-      font-size: clamp(3.4rem, 10vw, 7.4rem);
-      line-height: 0.9;
-      letter-spacing: -0.08em;
-      font-style: italic;
-      font-weight: 900;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.38));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .creator-hero-copy {
-      max-width: 52rem;
-      margin: 0 auto;
-      color: rgba(255, 255, 255, 0.72);
-      font-size: clamp(1.2rem, 2.8vw, 2rem);
-      line-height: 1.55;
-      font-weight: 300;
-    }
-
-    .creator-section-title {
-      margin: 0 0 2rem;
-      font-size: clamp(2.7rem, 6vw, 5rem);
-      line-height: 0.95;
-      font-weight: 900;
-      letter-spacing: -0.06em;
-      text-transform: uppercase;
-    }
-
-    .creator-section-title.stroke-text {
-      color: transparent;
-    }
-
-    .creator-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.25rem;
-    }
-
-    .creator-card {
-      padding: 1.6rem;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      animation: slide-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .creator-card p {
-      margin: 0;
-      font-size: 1.1rem;
-      line-height: 1.5;
-      font-weight: 500;
-    }
-
-    .creator-pill-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    .creator-pill {
-      padding: 1rem 1.75rem;
-      border-radius: 999px;
-      background: #dc2626;
-      box-shadow: var(--shadow-red);
-      font-size: clamp(1rem, 2.2vw, 1.35rem);
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .creator-payoff {
-      text-align: center;
-    }
-
-    .creator-payoff-label {
-      margin: 0 0 1rem;
-      color: rgba(255, 255, 255, 0.45);
-      font-size: 0.88rem;
-      font-weight: 800;
-      letter-spacing: 0.48em;
-      text-transform: uppercase;
-    }
-
-    .creator-payoff-amount {
-      margin: 0 0 2rem;
-      font-size: clamp(2.8rem, 8vw, 6.4rem);
-      line-height: 0.95;
-      font-weight: 900;
-      letter-spacing: -0.06em;
-    }
-
-    .creator-primary-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.2rem 2rem;
-      border-radius: 999px;
-      background: #fff;
-      color: #000;
-      font-size: clamp(1rem, 2vw, 1.35rem);
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      box-shadow: var(--shadow-white);
-      transition: transform var(--transition), background-color var(--transition);
-    }
-
-    .creator-primary-btn:hover {
-      background: #e5e7eb;
-      transform: scale(1.02);
-    }
-
-    .creator-return {
-      display: inline-flex;
-      margin-top: 1.4rem;
-      padding-bottom: 0.22rem;
-      border-bottom: 1px solid transparent;
-      color: rgba(255, 255, 255, 0.54);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      transition: color var(--transition), border-color var(--transition);
-    }
-
-    .creator-return:hover {
-      color: #fff;
-      border-color: #fff;
-    }
-
-    .creator-footer {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 2rem;
-      z-index: 3;
-      padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .creator-dots {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .creator-dot {
-      width: 16px;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.2);
-      transition: width 500ms ease, background-color 500ms ease;
-    }
-
-    .creator-dot.active {
-      width: 48px;
-      background: #fff;
-    }
-
-    .creator-nav {
-      display: flex;
-      gap: 0.75rem;
-    }
-
-    .creator-nav-btn {
-      width: 58px;
-      height: 58px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.02);
-      transition: background-color var(--transition), transform var(--transition), opacity var(--transition);
-    }
-
-    .creator-nav-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-1px);
-    }
-
-    .creator-nav-btn.primary {
-      background: #fff;
-      color: #000;
-      border-color: transparent;
-    }
-
-    .creator-nav-btn.primary:hover:not(:disabled) {
-      background: #e5e7eb;
-    }
-
-    .creator-nav-btn:disabled {
-      opacity: 0.2;
-    }
-
-    .community-shell {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      overflow: hidden;
-      background: #050505;
-      animation: fade-in 0.35s ease both;
-    }
-
-    .community-bg,
-    .community-bg::before,
-    .community-bg::after {
-      position: absolute;
-      inset: 0;
-      content: "";
-    }
-
-    .community-bg {
-      background: linear-gradient(135deg, rgba(88, 28, 135, 0.22), #050505 70%);
-      z-index: 0;
-    }
-
-    .community-bg::before {
-      top: 18%;
-      left: 18%;
-      width: 24rem;
-      height: 24rem;
-      border-radius: 50%;
-      background: rgba(147, 51, 234, 0.12);
-      filter: blur(100px);
-    }
-
-    .community-bg::after {
-      right: 18%;
-      bottom: 18%;
-      width: 24rem;
-      height: 24rem;
-      border-radius: 50%;
-      background: rgba(236, 72, 153, 0.1);
-      filter: blur(100px);
-    }
-
-    .phone-shell {
-      position: relative;
-      z-index: 1;
-      width: min(100%, 400px);
-      height: min(90vh, 800px);
-      background: #000;
-      border: 8px solid #111827;
-      border-radius: 3rem;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 0 50px rgba(168, 85, 247, 0.16);
-    }
-
-    .phone-notch {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 24px;
-      display: flex;
-      justify-content: center;
-      z-index: 5;
-    }
-
-    .phone-notch::before {
-      content: "";
-      width: 132px;
-      height: 24px;
-      background: #111827;
-      border-bottom-left-radius: 999px;
-      border-bottom-right-radius: 999px;
-    }
-
-    .chat-header {
-      padding: 2.55rem 1rem 0.8rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(17, 24, 39, 0.9);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }
-
-    .chat-header-left,
-    .chat-brand,
-    .chat-header-actions {
-      display: flex;
-      align-items: center;
-    }
-
-    .chat-header-left {
-      gap: 0.75rem;
-      min-width: 0;
-    }
-
-    .chat-brand {
-      gap: 0.75rem;
-      min-width: 0;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      transition: background-color var(--transition), color var(--transition), transform var(--transition);
-      color: #fff;
-    }
-
-    .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      transform: translateY(-1px);
-    }
-
-    .chat-avatar-frame {
-      width: 42px;
-      height: 42px;
-      padding: 2px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #a855f7, #ec4899, #f97316);
-      flex-shrink: 0;
-    }
-
-    .chat-avatar-frame img,
-    .chat-avatar-frame .avatar-core {
-      width: 100%;
-      height: 100%;
-      border-radius: 999px;
-      object-fit: cover;
-      background: #000;
-    }
-
-    .avatar-core {
-      display: grid;
-      place-items: center;
-      font-size: 0.85rem;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .chat-brand-copy {
-      min-width: 0;
-    }
-
-    .chat-brand-name {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      min-width: 0;
-      font-size: 0.95rem;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .chat-brand-name span:first-child {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .chat-status {
-      display: block;
-      color: #9ca3af;
-      font-size: 0.72rem;
-      margin-top: 0.2rem;
-    }
-
-    .chat-header-actions {
-      gap: 0.5rem;
-      color: #fff;
-    }
-
-    .chat-scroll {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      background: #000;
-    }
-
-    .chat-timestamp {
-      margin: 0.3rem 0;
-      color: #6b7280;
-      text-align: center;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-    }
-
-    .chat-message-row {
-      display: flex;
-      gap: 0.75rem;
-      max-width: 90%;
-      animation: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .chat-message-row.card {
-      max-width: 94%;
-    }
-
-    .chat-bubble {
-      background: #1f2937;
-      color: #fff;
-      border-radius: 20px;
-      border-bottom-left-radius: 6px;
-      padding: 0.95rem 1rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
-      font-size: 0.92rem;
-      line-height: 1.6;
-    }
-
-    .chat-card-box {
-      background: #1f2937;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      border-bottom-left-radius: 6px;
-      padding: 1rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
-    }
-
-    .chat-card-title {
-      margin: 0 0 0.9rem;
-      color: #c084fc;
-      font-size: 1rem;
-      font-weight: 800;
-    }
-
-    .chat-card-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.72rem;
-    }
-
-    .chat-card-item {
-      display: flex;
-      gap: 0.7rem;
-      align-items: flex-start;
-      color: #e5e7eb;
-      font-size: 0.9rem;
-      line-height: 1.55;
-    }
-
-    .typing-indicator {
-      display: flex;
-      gap: 0.75rem;
-      max-width: 85%;
-      animation: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .typing-bubble {
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      gap: 0.32rem;
-      padding: 0.95rem 0.9rem;
-      border-radius: 20px;
-      border-bottom-left-radius: 6px;
-      background: #1f2937;
-    }
-
-    .typing-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #9ca3af;
-      animation: bounce 1.4s infinite ease-in-out both;
-    }
-
-    .typing-dot:nth-child(1) {
-      animation-delay: -0.32s;
-    }
-
-    .typing-dot:nth-child(2) {
-      animation-delay: -0.16s;
-    }
-
-    .chat-input-wrap {
-      padding: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      background: #000;
-      flex-shrink: 0;
-    }
-
-    .chat-input-shell {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.55rem 0.75rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: #111827;
-      transition: border-color var(--transition);
-    }
-
-    .chat-input-shell:focus-within {
-      border-color: rgba(168, 85, 247, 0.7);
-    }
-
-    .chat-input-camera {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #9333ea, #ec4899);
-      flex-shrink: 0;
-      color: #fff;
-      transition: transform var(--transition);
-    }
-
-    .chat-input-camera:hover {
-      transform: scale(1.05);
-    }
-
-    .chat-input {
-      flex: 1;
-      border: 0;
-      background: transparent;
-      color: #fff;
-      outline: 0;
-      font-size: 0.92rem;
-    }
-
-    .chat-input::placeholder {
-      color: #6b7280;
-    }
-
-    .chat-apply-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.65rem 1rem;
-      border-radius: 999px;
-      background: #9333ea;
-      color: #fff;
-      box-shadow: var(--shadow-purple);
-      font-size: 0.88rem;
-      font-weight: 800;
-      white-space: nowrap;
-      transition: background-color var(--transition), transform var(--transition), opacity var(--transition);
-    }
-
-    .chat-apply-btn:hover {
-      background: #a855f7;
-      transform: translateY(-1px);
-    }
-
-    .application-shell {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: var(--app-bg, #050a14);
-      animation: app-in 0.32s ease both;
-    }
-
-    .application-bg {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .application-shell[data-theme="developer"] .application-bg::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
-      background-size: 100% 2px, 3px 100%;
-    }
-
-    .application-shell[data-theme="creator"] .application-bg::before,
-    .application-shell[data-theme="creator"] .application-bg::after {
-      content: "";
-      position: absolute;
-      width: 64px;
-      height: 64px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .application-shell[data-theme="creator"] .application-bg::before {
-      top: 2rem;
-      left: 2rem;
-      border-right: 0;
-      border-bottom: 0;
-    }
-
-    .application-shell[data-theme="creator"] .application-bg::after {
-      right: 2rem;
-      bottom: 2rem;
-      border-left: 0;
-      border-top: 0;
-    }
-
-    .application-shell[data-theme="community"] .application-bg::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(168, 85, 247, 0.12) 0%, transparent 70%);
-    }
-
-    .application-hud {
-      position: absolute;
-      top: 2.2rem;
-      right: 2rem;
-      text-align: right;
-      color: rgba(255, 255, 255, 0.2);
-      font-size: 0.72rem;
-      line-height: 1.5;
-      white-space: pre-line;
-      pointer-events: none;
-    }
-
-    .application-rec {
-      position: absolute;
-      top: 2.2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 0.45rem 1rem;
-      border-radius: 999px;
-      background: #dc2626;
-      color: #fff;
-      font-size: 0.62rem;
-      font-weight: 800;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      box-shadow: var(--shadow-red);
-    }
-
-    .application-header {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1.5rem 1.5rem 1rem;
-      flex-shrink: 0;
-    }
-
-    .application-header-left {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-    }
-
-    .application-level {
-      color: var(--app-text, #93c5fd);
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-    }
-
-    .application-close {
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      color: rgba(255, 255, 255, 0.6);
-      transition: background-color var(--transition), color var(--transition);
-    }
-
-    .application-close:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-    }
-
-    .application-main {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      width: min(100%, 960px);
-      margin: 0 auto;
-      padding: 1rem 1.5rem 2rem;
-    }
-
-    .question-wrap {
-      animation: slide-up 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .question-label {
-      display: block;
-      margin-bottom: 1.5rem;
-      color: var(--app-accent, #3b82f6);
-      font-size: clamp(0.82rem, 1.4vw, 1rem);
-      font-weight: 800;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    .application-shell[data-theme="developer"] .question-label,
-    .application-shell[data-theme="developer"] .application-field,
-    .application-shell[data-theme="developer"] .select-option,
-    .application-shell[data-theme="developer"] .question-hint {
-      font-family: var(--font-mono);
-    }
-
-    .application-field {
-      width: 100%;
-      border: 0;
-      border-bottom: 2px solid var(--app-border, rgba(59, 130, 246, 0.5));
-      background: transparent;
-      color: var(--app-input, #fff);
-      outline: 0;
-      padding: 1rem 0;
-      font-size: clamp(1.9rem, 5vw, 3rem);
-      line-height: 1.3;
-      transition: border-color var(--transition), background-color var(--transition), box-shadow var(--transition);
-    }
-
-    .application-field::placeholder {
-      color: rgba(255, 255, 255, 0.2);
-    }
-
-    .application-shell[data-theme="creator"] .application-field {
-      padding: 1.35rem 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      font-size: clamp(1.6rem, 4.2vw, 2.8rem);
-      font-weight: 300;
-    }
-
-    .application-shell[data-theme="community"] .application-field {
-      color: #e9d5ff;
-    }
-
-    .application-field:focus {
-      border-color: var(--app-accent, #3b82f6);
-    }
-
-    .application-shell[data-theme="creator"] .application-field:focus {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    textarea.application-field {
-      min-height: 180px;
-      resize: none;
-    }
-
-    .select-list {
-      display: grid;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .select-option {
-      width: 100%;
-      text-align: left;
-      padding: 1rem 1.1rem;
-      border: 2px solid var(--app-option-border, rgba(59, 130, 246, 0.22));
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.02);
-      color: var(--app-option-text, #fff);
-      transition: border-color var(--transition), background-color var(--transition), transform var(--transition), color var(--transition);
-    }
-
-    .application-shell[data-theme="creator"] .select-option {
-      border-radius: 18px;
-      padding: 1.25rem 1.35rem;
-      font-size: 1rem;
-    }
-
-    .select-option:hover {
-      border-color: var(--app-accent, #3b82f6);
-      transform: translateY(-1px);
-    }
-
-    .select-option.active {
-      border-color: var(--app-accent, #3b82f6);
-      background: var(--app-soft, rgba(59, 130, 246, 0.18));
-      color: #fff;
-    }
-
-    .select-option-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .confirm-btn,
-    .app-next-btn,
-    .completion-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      padding: 1rem 1.25rem;
-      border-radius: 999px;
-      background: var(--app-button-bg, #2563eb);
-      color: var(--app-button-text, #fff);
-      font-size: 0.92rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: transform var(--transition), background-color var(--transition), opacity var(--transition);
-    }
-
-    .confirm-btn:hover:not(:disabled),
-    .app-next-btn:hover:not(:disabled),
-    .completion-primary:hover {
-      transform: translateY(-1px);
-    }
-
-    .confirm-btn:disabled,
-    .app-next-btn:disabled {
-      opacity: 0.5;
-    }
-
-    .question-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 2rem;
-      color: rgba(255, 255, 255, 0.45);
-      min-height: 48px;
-    }
-
-    .question-hint {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
-    .keycap {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 28px;
-      padding: 0.18rem 0.35rem;
-      border-radius: 7px;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      font-size: 0.62rem;
-    }
-
-    .application-progress {
-      position: relative;
-      z-index: 1;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .application-progress-bar {
-      height: 100%;
-      background: var(--app-accent, #3b82f6);
-      box-shadow: 0 0 20px color-mix(in srgb, var(--app-accent, #3b82f6) 45%, transparent);
-      transition: width 380ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .completion-screen {
-      flex: 1;
-      display: grid;
-      place-items: center;
-      padding: 2rem;
-      position: relative;
-      z-index: 1;
-    }
-
-    .completion-card {
-      width: min(100%, 760px);
-      text-align: center;
-      animation: scene-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .completion-icon {
-      width: 96px;
-      height: 96px;
-      margin: 0 auto 2rem;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      border: 4px solid var(--app-accent, #3b82f6);
-      color: var(--app-accent, #3b82f6);
-    }
-
-    .completion-title {
-      margin: 0 0 1rem;
-      font-size: clamp(2.4rem, 6vw, 4rem);
-      line-height: 0.95;
-      font-weight: 900;
-      letter-spacing: -0.06em;
-      text-transform: uppercase;
-    }
-
-    .completion-copy {
-      margin: 0 auto 2rem;
-      max-width: 40rem;
-      color: #9ca3af;
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-      line-height: 1.7;
-    }
-
-    .completion-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      margin-top: 1rem;
-      color: #6b7280;
-      font-size: 0.85rem;
-      font-weight: 800;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      transition: color var(--transition);
-    }
-
-    .completion-secondary:hover {
-      color: #fff;
-    }
-
-    .loading-copy {
-      margin-top: 1rem;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 8px;
     }
-
     ::-webkit-scrollbar-track {
-      background: transparent;
+      background: #020202;
     }
-
     ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 999px;
+      background: #333;
+      border-radius: 4px;
     }
-
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.4);
+      background: #555;
     }
-
-    @keyframes fade-in {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+    
+    /* Animations */
+    .opacity-0-init { 
+      opacity: 0; 
+      transform: translateY(30px); 
     }
-
-    @keyframes slide-up {
-      from {
-        opacity: 0;
-        transform: translateY(18px) scale(0.98);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes scene-in {
-      from {
-        opacity: 0;
-        transform: scale(1.04);
-        filter: blur(10px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0);
-      }
+    .animate-fade-in-up {
+      animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.06);
-      }
+    
+    /* Bento Box Variants */
+    .variant-glass {
+      background-color: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: white;
     }
-
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
+    .variant-glass:hover {
+      background-color: rgba(255, 255, 255, 0.04);
     }
-
-    @keyframes bounce {
-      0%, 80%, 100% {
-        transform: scale(0);
-      }
-      40% {
-        transform: scale(1);
-      }
+    .variant-white {
+      background-color: white;
+      color: black;
     }
-
-    @keyframes shake {
-      20% {
-        transform: translateX(-6px);
-      }
-      40% {
-        transform: translateX(6px);
-      }
-      60% {
-        transform: translateX(-4px);
-      }
-      80% {
-        transform: translateX(4px);
-      }
-      100% {
-        transform: translateX(0);
-      }
+    .variant-white:hover {
+      background-color: #f9fafb;
     }
-
-    @keyframes app-in {
-      from {
-        opacity: 0;
-        transform: scale(1.03);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+    .variant-black {
+      background-color: #050505;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
-    @media (min-width: 900px) {
-      .intro-screen {
-        flex-direction: row;
-      }
-
-      .intro-panel {
-        min-height: 100vh;
-        border-bottom: 0;
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .intro-panel:last-child {
-        border-right: 0;
-      }
-
-      .intro-screen:hover .intro-panel {
-        flex: 0.8 1 0;
-      }
-
-      .intro-screen:hover .intro-panel:hover {
-        flex: 1.4 1 0;
-      }
-    }
-
-    @media (hover: hover) {
-      .intro-panel:hover .intro-panel__pattern {
-        opacity: 0.22;
-      }
-
-      .intro-panel:hover .icon-badge {
-        transform: scale(1.1);
-      }
-
-      .intro-panel.theme-developer:hover .intro-panel__tone {
-        background: rgba(30, 58, 138, 0.32);
-      }
-
-      .intro-panel.theme-creator:hover .intro-panel__tone {
-        background: rgba(153, 27, 27, 0.32);
-      }
-
-      .intro-panel.theme-community:hover .intro-panel__tone {
-        background: rgba(107, 33, 168, 0.32);
-      }
-
-      .intro-panel:hover .intro-panel__title {
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-      }
-
-      .intro-panel:hover .intro-panel__cta {
-        margin-top: 1.6rem;
-        max-height: 60px;
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (hover: none) {
-      .intro-panel__cta {
-        margin-top: 1.35rem;
-        max-height: 60px;
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    @media (max-width: 980px) {
-      .dev-body {
-        flex-direction: column;
-      }
-
-      .dev-sidebar {
-        width: 100%;
-        max-height: 250px;
-        border-right: 0;
-        border-bottom: 1px solid #26303a;
-      }
-
-      .creator-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .creator-footer {
-        bottom: 1.25rem;
-        padding: 0 1.25rem;
-      }
-    }
-
-    @media (max-width: 720px) {
-      body {
-        overflow: auto;
-      }
-
-      .intro-logo {
-        top: 1rem;
-      }
-
-      .creator-hud,
-      .application-rec {
-        max-width: calc(100vw - 3rem);
-        gap: 0.7rem;
-        padding-inline: 0.8rem;
-      }
-
-      .creator-close,
-      .application-hud {
-        top: 1rem;
-      }
-
-      .creator-close {
-        right: 1rem;
-      }
-
-      .view-corner.top-left,
-      .view-corner.top-right {
-        top: 1.25rem;
-      }
-
-      .view-corner.bottom-left,
-      .view-corner.bottom-right {
-        bottom: 5rem;
-      }
-
-      .view-corner.top-left,
-      .view-corner.bottom-left {
-        left: 1rem;
-      }
-
-      .view-corner.top-right,
-      .view-corner.bottom-right {
-        right: 1rem;
-      }
-
-      .question-footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .creator-footer {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .creator-nav {
-        justify-content: flex-end;
-      }
-
-      .application-header {
-        padding: 1rem;
-      }
-
-      .application-main {
-        padding: 1rem;
-      }
+    .variant-black:hover {
+      background-color: #0a0a0a;
     }
   </style>
 </head>
-<body>
-  <div id="app"></div>
+<body class="min-h-screen bg-[#020202] text-white p-3 md:p-6 font-sans selection:bg-white selection:text-black">
+  
+  <!-- HERO - Outside Bento Grid -->
+  <div class="max-w-[1800px] mx-auto pt-8 pb-12 px-2 md:px-6">
+    <div class="flex flex-col md:flex-row justify-between items-start gap-8 mb-8">
+      
+      <!-- Left: Title Section -->
+      <div class="flex flex-col">
+        <div class="mb-2 md:mb-4 animate-fade-in-up" style="animation-delay: 0s; opacity: 0;">
+          <span class="text-white/30 text-sm md:text-base font-light tracking-widest uppercase">Remote / Presencial</span>
+        </div>
 
-  <div class="grain-overlay" aria-hidden="true">
-    <svg>
-      <filter id="noiseFilter">
-        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"></feTurbulence>
-      </filter>
-      <rect width="100%" height="100%" filter="url(#noiseFilter)"></rect>
-    </svg>
+        <h1 class="text-[14vw] md:text-[11vw] lg:text-[9vw] font-black uppercase tracking-tighter leading-[0.85] animate-fade-in-up" style="animation-delay: 0.1s; opacity: 0;">
+          Creador <br/>
+          <span class="text-transparent" style="-webkit-text-stroke: 2px rgba(255,255,255,0.9);">De Contenido</span> <br/>
+          Jr.
+        </h1>
+      </div>
+
+      <!-- Right: Logo -->
+      <img 
+        src="https://raw.githubusercontent.com/wespeakagency/Fitform_Im-genes/main/logowespeak_nuevo_resplandor.png" 
+        alt="WeSpeak Logo" 
+        class="h-24 md:h-36 lg:h-48 object-contain shrink-0 animate-fade-in-up" 
+        style="animation-delay: 0.2s; opacity: 0;"
+        referrerpolicy="no-referrer"
+      />
+      
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <!-- BENTO GRID -->
+  <div class="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 auto-rows-auto">
+
+    <!-- ABOUT -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-white md:col-span-1 lg:col-span-1 flex flex-col justify-between scroll-anim opacity-0-init" style="animation-delay: 0.1s;">
+      <div class="flex items-start justify-between mb-10">
+        <h3 class="text-2xl md:text-4xl font-black uppercase tracking-tighter w-2/3 leading-none text-black">
+          ¿Quiénes Somos?
+        </h3>
+        <span class="text-lg md:text-xl font-light tracking-widest text-black/30">
+          01
+        </span>
+      </div>
+      <div class="mt-8">
+        <p class="font-light text-black/80 leading-relaxed text-lg md:text-xl mb-8">
+          <strong class="font-black text-black">WeSpeak</strong> es una agencia de amplificación de marcas enfocada en transformar la narrativa de las empresas en ecosistemas de contenido de alto impacto.
+        </p>
+        <p class="font-light text-black/80 leading-relaxed text-lg md:text-xl">
+          Trabajamos con Startups, Fintechs y marcas de Lifestyle para eliminar el ruido digital y construir autoridad mediante storytelling y producción de alta calidad.
+        </p>
+        <a href="https://wespeak.mx" target="_blank" rel="noreferrer" class="inline-flex items-center mt-12 text-sm font-black uppercase tracking-widest text-black hover:text-black/50 transition-colors border-b-2 border-black pb-1">
+          wespeak.mx <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-glass md:col-span-2 lg:col-span-2 scroll-anim opacity-0-init" style="animation-delay: 0.2s;">
+      <div class="flex items-start justify-between mb-10">
+        <h3 class="text-2xl md:text-4xl font-black uppercase tracking-tighter w-2/3 leading-none text-white">
+          El Perfil
+        </h3>
+        <span class="text-lg md:text-xl font-light tracking-widest text-white/30">
+          02
+        </span>
+      </div>
+      <p class="font-light text-white/90 leading-relaxed text-2xl md:text-3xl tracking-tight mb-8">
+        Buscamos a un creativo rápido y organizado que pueda pensar ideas, grabar, editar, diseñar y sobre todo que esté <strong class="font-black text-white">profundamente involucrado en el uso de IA</strong> para optimizar la creación.
+      </p>
+      <p class="font-light text-white/60 leading-relaxed text-lg">
+        Alguien con hambre de crecer, que entienda cómo se mueve el contenido hoy y quiera evolucionar en un equipo que produce a gran ritmo.
+      </p>
+    </div>
+
+    <!-- IMPORTANT NOTE -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-black md:col-span-3 lg:col-span-1 flex flex-col justify-center items-center text-center scroll-anim opacity-0-init" style="animation-delay: 0.3s;">
+      <i data-lucide="zap" class="w-12 h-12 text-white mb-6 opacity-50"></i>
+      <h4 class="text-xl font-black uppercase tracking-widest mb-4">IMPORTANTE</h4>
+      <p class="font-light text-white/70 text-lg max-w-md">
+        Aunque la posición es remota, necesitamos que tengas disponibilidad para asistir a eventos o llamados de grabación cuando el proyecto lo requiera.
+      </p>
+    </div>
+
+    <!-- RESPONSIBILITIES -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-black md:col-span-3 lg:col-span-2 scroll-anim opacity-0-init" style="animation-delay: 0.4s;">
+      <div class="flex items-start justify-between mb-10">
+        <h3 class="text-2xl md:text-4xl font-black uppercase tracking-tighter w-2/3 leading-none text-white">
+          Responsabilidades
+        </h3>
+        <span class="text-lg md:text-xl font-light tracking-widest text-white/30">
+          03
+        </span>
+      </div>
+      <ul class="space-y-6 mt-8">
+        <li class="flex items-start gap-4 font-light leading-relaxed text-lg text-white/70">
+          <div class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-white"></div>
+          <span>Proponer ideas creativas para contenido (Reels/TikTok, carruseles, historias).</span>
+        </li>
+        <li class="flex items-start gap-4 font-light leading-relaxed text-lg text-white/70">
+          <div class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-white"></div>
+          <span>Planear contenido por prioridades y tiempos con estructura y orden.</span>
+        </li>
+        <li class="flex items-start gap-4 font-light leading-relaxed text-lg text-white/70">
+          <div class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-white"></div>
+          <span>Grabar contenido con celular/cámara (tomas limpias, audio, buena luz).</span>
+        </li>
+        <li class="flex items-start gap-4 font-light leading-relaxed text-lg text-white/70">
+          <div class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-white"></div>
+          <span>Editar video para formato vertical (dinámico, con ritmo y estilo actual).</span>
+        </li>
+        <li class="flex items-start gap-4 font-light leading-relaxed text-lg text-white/70">
+          <div class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-white"></div>
+          <span>Diseñar piezas gráficas básicas para redes y adaptar a tendencias.</span>
+        </li>
+        <li class="flex items-start gap-4 font-light leading-relaxed text-lg text-white/70">
+          <div class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-white"></div>
+          <span>Mantener consistencia visual y narrativa según cada marca.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- REQUIREMENTS -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-glass md:col-span-3 lg:col-span-2 scroll-anim opacity-0-init" style="animation-delay: 0.5s;">
+      <div class="flex items-start justify-between mb-10">
+        <h3 class="text-2xl md:text-4xl font-black uppercase tracking-tighter w-2/3 leading-none text-white">
+          Requisitos
+        </h3>
+        <span class="text-lg md:text-xl font-light tracking-widest text-white/30">
+          04
+        </span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 mt-8">
+        <div class="flex flex-col gap-2">
+          <span class="font-black uppercase tracking-widest text-xs md:text-sm text-white">Dominio de IA</span>
+          <span class="font-light leading-relaxed text-base md:text-lg text-white/60">Herramientas aplicadas a edición de video, imagen o texto (comprobable).</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="font-black uppercase tracking-widest text-xs md:text-sm text-white">Edición de Video</span>
+          <span class="font-light leading-relaxed text-base md:text-lg text-white/60">Manejo fluido de CapCut, Premiere o Final Cut.</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="font-black uppercase tracking-widest text-xs md:text-sm text-white">Diseño básico</span>
+          <span class="font-light leading-relaxed text-base md:text-lg text-white/60">Manejo de Canva, Photoshop o Illustrator.</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="font-black uppercase tracking-widest text-xs md:text-sm text-white">Ojo Visual</span>
+          <span class="font-light leading-relaxed text-base md:text-lg text-white/60">Gran sentido de la composición, texto, ritmo y estética.</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="font-black uppercase tracking-widest text-xs md:text-sm text-white">Organización</span>
+          <span class="font-light leading-relaxed text-base md:text-lg text-white/60">Responsable con tiempos de entrega y orden de archivos.</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="font-black uppercase tracking-widest text-xs md:text-sm text-white">Equipo propio</span>
+          <span class="font-light leading-relaxed text-base md:text-lg text-white/60">Computadora con capacidad de edición fluida.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OFFER -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-white md:col-span-3 lg:col-span-2 scroll-anim opacity-0-init" style="animation-delay: 0.6s;">
+      <div class="flex items-start justify-between mb-10">
+        <h3 class="text-2xl md:text-4xl font-black uppercase tracking-tighter w-2/3 leading-none text-black">
+          Lo que ofrecemos
+        </h3>
+        <span class="text-lg md:text-xl font-light tracking-widest text-black/30">
+          05
+        </span>
+      </div>
+      <div class="space-y-8 mt-8">
+        <div class="flex gap-6 items-start">
+          <i data-lucide="briefcase" class="w-8 h-8 shrink-0 text-black/20"></i>
+          <div class="flex flex-col gap-2">
+            <span class="font-black uppercase tracking-widest text-xs md:text-sm text-black">Work tools & Flexibilidad</span>
+            <span class="font-light leading-relaxed text-base md:text-lg text-black/70">Licencias necesarias y flexibilidad de horario bajo KPIs.</span>
+          </div>
+        </div>
+        <div class="flex gap-6 items-start">
+          <i data-lucide="check-circle-2" class="w-8 h-8 shrink-0 text-black/20"></i>
+          <div class="flex flex-col gap-2">
+            <span class="font-black uppercase tracking-widest text-xs md:text-sm text-black">Portafolio Real</span>
+            <span class="font-light leading-relaxed text-base md:text-lg text-black/70">Trabajarás con marcas reales (Fintech, Startups, Lifestyle).</span>
+          </div>
+        </div>
+        <div class="flex gap-6 items-start">
+          <i data-lucide="monitor-play" class="w-8 h-8 shrink-0 text-black/20"></i>
+          <div class="flex flex-col gap-2">
+            <span class="font-black uppercase tracking-widest text-xs md:text-sm text-black">Home Office</span>
+            <span class="font-light leading-relaxed text-base md:text-lg text-black/70">Modalidad 85% remota con presencia virtual.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLUS -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-black md:col-span-3 lg:col-span-2 scroll-anim opacity-0-init" style="animation-delay: 0.7s;">
+      <div class="flex items-start justify-between mb-10">
+        <h3 class="text-2xl md:text-4xl font-black uppercase tracking-tighter w-2/3 leading-none text-white">
+          Suma Mucho
+        </h3>
+        <span class="text-lg md:text-xl font-light tracking-widest text-white/30">
+          06
+        </span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8">
+        <div class="bg-white/[0.03] p-6 rounded-2xl border border-white/5">
+          <i data-lucide="monitor-play" class="w-8 h-8 mb-4 text-white/50"></i>
+          <p class="font-light text-white/80">Haber crecido una cuenta propia o de terceros constantemente.</p>
+        </div>
+        <div class="bg-white/[0.03] p-6 rounded-2xl border border-white/5">
+          <i data-lucide="sparkles" class="w-8 h-8 mb-4 text-white/50"></i>
+          <p class="font-light text-white/80">Dominio de hooks, storytelling corto y edición rápida.</p>
+        </div>
+        <div class="bg-white/[0.03] p-6 rounded-2xl border border-white/5 sm:col-span-2">
+          <p class="font-light text-white/80">Conocimientos de Motion Graphics o animaciones simples, y saber trabajar con guiones o escaletas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPLY CTA -->
+    <div class="rounded-[2rem] p-8 md:p-10 lg:p-12 transition-colors duration-500 group overflow-hidden relative variant-glass md:col-span-3 lg:col-span-4 flex flex-col lg:flex-row items-start justify-between gap-12 lg:gap-24 scroll-anim opacity-0-init" style="animation-delay: 0.8s;">
+      <div class="flex-1 w-full lg:w-1/2">
+        <h2 class="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter mb-4">Aplica<br/>Ahora</h2>
+        <p class="font-light text-white/60 text-xl mb-8">
+          Llena los campos y enviaremos tu postulación a <span class="text-white font-bold">contacto@wespeak.mx</span>
+        </p>
+        
+        <form id="applyForm" class="flex flex-col gap-6 border-t border-white/10 pt-8">
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold uppercase tracking-widest text-white/70">Tu Nombre</label>
+            <input 
+              type="text" 
+              id="inputName"
+              placeholder="Ej. Juan Pérez"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold uppercase tracking-widest text-white/70">Teléfono</label>
+            <input 
+              type="tel" 
+              id="inputPhone"
+              placeholder="Ej. +52 55 1234 5678"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-widest text-white/70">Portafolio / Links</label>
+            <p class="text-xs text-white/50 font-light mb-1">Portafolio y/o links a piezas/cuentas creadas por ti.</p>
+            <input 
+              type="text" 
+              id="inputPortfolio"
+              placeholder="Links a piezas/cuentas creadas por ti"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-widest text-white/70">Brief IA</label>
+            <p class="text-xs text-white/50 font-light mb-1">Cuéntanos cómo usas la IA en tus procesos.</p>
+            <textarea 
+              id="inputBrief"
+              placeholder="Cuéntanos cómo usas la IA en tus procesos..."
+              rows="3"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors resize-none"
+            ></textarea>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-widest text-white/70">Proyectos IA</label>
+            <p class="text-xs text-white/50 font-light mb-1">Portafolio/links específicos de proyectos donde aplicaste la IA.</p>
+            <textarea 
+              id="inputProjects"
+              placeholder="Links de proyectos donde aplicaste la IA..."
+              rows="3"
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors resize-none"
+            ></textarea>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-widest text-white/70">Expectativa Salarial</label>
+            <p class="text-xs text-white/50 font-light mb-1">Indica tu expectativa económica mensual.</p>
+            <input 
+              type="text" 
+              id="inputSalary"
+              placeholder=""
+              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors"
+            />
+          </div>
+        </form>
+      </div>
+
+      <div class="w-full lg:w-auto flex justify-center lg:justify-end items-center self-stretch">
+        <button 
+          id="submitBtn"
+          class="group relative shrink-0 bg-white text-black w-full lg:w-72 h-32 lg:h-72 rounded-[2rem] lg:rounded-full flex flex-col items-center justify-center gap-4 hover:scale-105 transition-all duration-500 overflow-hidden cursor-pointer border-none outline-none"
+        >
+          <div class="absolute inset-0 bg-black/5 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+          <span class="font-black uppercase tracking-widest text-2xl relative z-10">Enviar</span>
+          <i data-lucide="arrow-right" class="w-10 h-10 relative z-10 group-hover:translate-x-3 transition-transform duration-300"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
   <script>
-    const APP = document.getElementById("app");
+    // Initialize Lucide Icons
+    lucide.createIcons();
 
-    const ROLES = {
-      developer: {
-        id: "developer",
-        title: "Programador Freelance",
-        subtitle: "The Architect",
-        description: "Buscamos a alguien resolutivo. No un arquitecto de la NASA, sino alguien que domestique código de IA y conecte APIs.",
-        salary: "$4,000 – $6,000 MXN / Mes",
-        responsibilities: [
-          "Limpieza y optimización de código IA",
-          "Conexiones API / Webhooks",
-          "Integraciones (Make/Zapier)",
-          "Mantenimiento Web"
-        ],
-        requirements: [
-          "Frontend/Backend Básico",
-          "Domar código IA",
-          "Mentalidad: Resolver > Complicar"
-        ]
-      },
-      creator: {
-        id: "creator",
-        title: "Creador Contenido Jr.",
-        subtitle: "The Visualist",
-        description: "Pensar, grabar, editar, diseñar. Entender cómo se mueve el contenido hoy. Sin scripts aburridos.",
-        salary: "$9,000 – $12,000 MXN / Mes",
-        responsibilities: [
-          "Proponer ideas (Reels/TikTok)",
-          "Edición dinámica vertical",
-          "Diseño gráfico básico",
-          "Adaptar tendencias"
-        ],
-        requirements: [
-          "Edición (CapCut/Premiere)",
-          "Buen ojo visual",
-          "Entender hooks y storytelling",
-          "Organización"
-        ]
-      },
-      community: {
-        id: "community",
-        title: "Community Manager",
-        subtitle: "The Voice",
-        description: "Responsable de atender canales digitales para atención de clientes, gestión de comunidad, programación de contenido.",
-        salary: "$6,000 – $8,000 MXN / Mes",
-        responsibilities: [
-          "Atención a clientes en canales digitales",
-          "Gestión de comunidad",
-          "Programación de contenido",
-          "Monitoreo de interacciones"
-        ],
-        requirements: [
-          "Excelente redacción y ortografía",
-          "Empatía y resolución de problemas",
-          "Manejo de herramientas de programación (Metricool, Hootsuite, etc.)",
-          "Conocimiento de tendencias en redes sociales"
-        ]
-      }
-    };
+    // Handle Form Submission
+    document.getElementById('submitBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('inputName').value;
+      const phone = document.getElementById('inputPhone').value;
+      const portfolio = document.getElementById('inputPortfolio').value;
+      const brief = document.getElementById('inputBrief').value;
+      const projects = document.getElementById('inputProjects').value;
+      const salary = document.getElementById('inputSalary').value;
 
-    const COMMON_QUESTIONS = [
-      { id: "name", label: "Identify Yourself", placeholder: "Tu nombre completo", type: "text" },
-      { id: "email", label: "Communication Channel", placeholder: "correo@ejemplo.com", type: "text" },
-      { id: "phone", label: "Direct Line (WhatsApp)", placeholder: "+52...", type: "text" },
-      { id: "portfolio", label: "Proof of Work", placeholder: "Link a tu Portfolio / LinkedIn", type: "text" }
-    ];
+      const subject = encodeURIComponent(`Vacante Creador Jr + ${name || '[Nombre]'}`);
+      const body = encodeURIComponent(`Nombre: ${name}\nTeléfono: ${phone}\n\nPortafolio / Links:\n${portfolio}\n\nBrief IA:\n${brief}\n\nProyectos IA:\n${projects}\n\nExpectativa Salarial:\n${salary}`);
+      
+      window.location.href = `mailto:contacto@wespeak.mx?subject=${subject}&body=${body}`;
+    });
 
-    const ROLE_QUESTIONS = {
-      developer: [
-        { id: "tech_stack", label: "Main Stack Definition", type: "text", placeholder: "Ej: React, Node, Python..." },
-        { id: "ai_experience", label: "AI Symbiosis Level", type: "select", options: ["Nula", "Básica (ChatGPT copy-paste)", "Intermedia (Cursor/Copilot)", "Avanzada (Refactorizo y optimizo)"] },
-        { id: "integration_example", label: "Execute Function: Cool_Automation()", type: "textarea", placeholder: "Cuéntanos de una integración o automatización cool que hayas hecho..." }
-      ],
-      creator: [
-        { id: "tools", label: "Weapon of Choice", type: "text", placeholder: "Ej: CapCut, Premiere, Canva, After Effects..." },
-        { id: "best_video", label: "The Masterpiece", type: "text", placeholder: "Link a tu mejor video URL (TikTok/Reel/Drive)" },
-        { id: "trend_check", label: "Vibe Check: Trends", type: "textarea", placeholder: "¿Qué tendencia actual odias y cuál amas?" }
-      ],
-      community: [
-        { id: "tools", label: "Management Tools", type: "text", placeholder: "Ej: Metricool, Hootsuite, Meta Business Suite..." },
-        { id: "crisis_management", label: "Crisis Protocol", type: "textarea", placeholder: "¿Cómo manejas un comentario muy negativo de un cliente enojado en una publicación pública?" },
-        { id: "community_growth", label: "Growth Strategy", type: "textarea", placeholder: "Describe brevemente una estrategia que usarías para aumentar la interacción en Instagram." }
-      ]
-    };
-
-    const THEMES = {
-      developer: {
-        accent: "#3b82f6",
-        soft: "rgba(59, 130, 246, 0.18)",
-        bg: "#050a14",
-        text: "#93c5fd",
-        input: "#dbeafe",
-        border: "rgba(59, 130, 246, 0.45)",
-        buttonBg: "#2563eb",
-        buttonText: "#ffffff",
-        hud: "> SYSTEM.INIT()\\n> LOADING MODULES...\\n> CONNECTED: Programador Freelance\\n> RAM: OK"
-      },
-      creator: {
-        accent: "#ef4444",
-        soft: "rgba(239, 68, 68, 0.18)",
-        bg: "#0a0505",
-        text: "#fca5a5",
-        input: "#ffffff",
-        border: "rgba(255, 255, 255, 0.1)",
-        buttonBg: "#ffffff",
-        buttonText: "#000000",
-        hud: ""
-      },
-      community: {
-        accent: "#a855f7",
-        soft: "rgba(168, 85, 247, 0.18)",
-        bg: "#0a0514",
-        text: "#d8b4fe",
-        input: "#f5e8ff",
-        border: "rgba(168, 85, 247, 0.45)",
-        buttonBg: "#9333ea",
-        buttonText: "#ffffff",
-        hud: "> CONNECTING TO CHANNELS...\\n> LISTENING...\\n> STATUS: ONLINE"
-      }
-    };
-
-    const state = {
-      view: "intro",
-      selectedRole: null,
-      detail: {
-        developer: { activeFile: "mission" },
-        creator: { sceneIndex: 0 },
-        community: { messagesShown: 1 }
-      },
-      application: getInitialApplicationState()
-    };
-
-    let communityTimer = null;
-    let focusTimer = null;
-    let completeTimer = null;
-
-    function getInitialApplicationState() {
-      return {
-        stepIndex: 0,
-        answers: {},
-        isGenerating: false,
-        isCompleted: false
-      };
-    }
-
-    function resetDetailState(roleId) {
-      if (roleId === "developer") {
-        state.detail.developer = { activeFile: "mission" };
-      }
-      if (roleId === "creator") {
-        state.detail.creator = { sceneIndex: 0 };
-      }
-      if (roleId === "community") {
-        state.detail.community = { messagesShown: 1 };
-      }
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
-    function icon(name, size = 24, className = "", strokeWidth = 1.8) {
-      const icons = {
-        terminal: '<polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line>',
-        arrowRight: '<line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>',
-        aperture: '<circle cx="12" cy="12" r="3"></circle><path d="M14.3 2.7 19 11"></path><path d="M21.3 14.5 12 14"></path><path d="M16.7 21.3 9.7 16"></path><path d="M7.3 21.3 12 13"></path><path d="M2.7 14.5 12 14"></path><path d="M4.7 11 9.7 2.7"></path>',
-        messageCircle: '<path d="M7.9 20A9 9 0 1 1 20 7.9"></path><path d="M3 21l3.6-3.6"></path>',
-        fileCode: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="m10 13-2 2 2 2"></path><path d="m14 13 2 2-2 2"></path>',
-        cpu: '<rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M9 1v3"></path><path d="M15 1v3"></path><path d="M9 20v3"></path><path d="M15 20v3"></path><path d="M20 9h3"></path><path d="M20 14h3"></path><path d="M1 9h3"></path><path d="M1 14h3"></path>',
-        dollarSign: '<line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H7"></path>',
-        x: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>',
-        chevronRight: '<polyline points="9 18 15 12 9 6"></polyline>',
-        chevronLeft: '<polyline points="15 18 9 12 15 6"></polyline>',
-        disc: '<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2.5"></circle>',
-        battery: '<rect x="2" y="7" width="18" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line><line x1="4" y1="9" x2="4" y2="15"></line><line x1="8" y1="9" x2="8" y2="15"></line><line x1="12" y1="9" x2="12" y2="15"></line><line x1="16" y1="9" x2="16" y2="15"></line>',
-        badgeCheck: '<path d="m12 3 2.8 1.6 3.2-.3 1.3 3 2.7 1.7-1.2 3 1.2 3-2.7 1.7-1.3 3-3.2-.3L12 21l-2.8-1.6-3.2.3-1.3-3L2 15l1.2-3L2 9l2.7-1.7 1.3-3 3.2.3z"></path><path d="m9 12 2 2 4-4"></path>',
-        phone: '<path d="M22 16.92V20a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.4 18.6 19.5 19.5 0 0 1 5.4 12.6 19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 4 2h3.09a2 2 0 0 1 2 1.72l.7 4.22a2 2 0 0 1-.57 1.74l-1.44 1.44a16 16 0 0 0 6.12 6.12l1.44-1.44a2 2 0 0 1 1.74-.57l4.22.7A2 2 0 0 1 22 16.92z"></path>',
-        video: '<path d="m23 7-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2"></rect>',
-        camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle>',
-        checkCircle: '<circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path>',
-        home: '<path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path>',
-        send: '<path d="M22 2 11 13"></path><path d="m22 2-7 20-4-9-9-4Z"></path>'
-      };
-      const content = icons[name] || "";
-      return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" class="' + className + '" fill="none" stroke="currentColor" stroke-width="' + strokeWidth + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + content + "</svg>";
-    }
-
-    function getApplicationQuestions(roleId) {
-      const finalLabel = roleId === "developer" ? "Run Why_WeSpeak.exe" : roleId === "creator" ? "Director's Cut Commentary" : "Community Voice Check";
-      const finalQuestions = [{
-        id: "why_wespeak",
-        label: finalLabel,
-        type: "textarea",
-        placeholder: "¿Por qué WeSpeak? (Sin rollos mareadores)"
-      }];
-      return [...COMMON_QUESTIONS, ...ROLE_QUESTIONS[roleId], ...finalQuestions];
-    }
-
-    function introPanel(roleId, title, meta, cta, themeClass, iconName, patternHtml) {
-      return `
-        <section class="intro-panel ${themeClass}">
-          <div class="intro-panel__tone"></div>
-          <div class="intro-panel__pattern">${patternHtml}</div>
-          <button class="intro-panel__button" type="button" data-role="${roleId}">
-            <div class="intro-panel__content">
-              <div class="icon-badge">${icon(iconName, 46)}</div>
-              <h2 class="intro-panel__title">${title}</h2>
-              <p class="intro-panel__meta">${meta}</p>
-              <span class="intro-panel__cta">
-                <span>${cta}</span>
-                ${icon("arrowRight", 14)}
-              </span>
-            </div>
-          </button>
-        </section>
-      `;
-    }
-
-    function renderIntro() {
-      const codePattern = Array.from({ length: 100 }, function () {
-        return "function_optimize(AI) { return 'future'; } //";
-      }).join(" ");
-
-      APP.innerHTML = `
-        <main class="intro-screen">
-          <div class="intro-logo">
-            <img src="https://raw.githubusercontent.com/ryandoelsol/wespeak/Pagina-web/logowespeak.png" alt="WeSpeak">
-          </div>
-          ${introPanel("developer", "THE ARCHITECT", "Logic • Code • Structure", "Enter System", "theme-developer", "terminal", '<div class="intro-pattern-code">' + escapeHtml(codePattern) + "</div>")}
-          ${introPanel("creator", "THE VISUALIST", "Magic • Edit • Flow", "Start Recording", "theme-creator", "aperture", '<div class="intro-pattern-noise"></div>')}
-          ${introPanel("community", "THE VOICE", "Connect • Engage • Grow", "Join Conversation", "theme-community", "messageCircle", '<div class="intro-pattern-dots"></div>')}
-        </main>
-      `;
-
-      APP.querySelectorAll("[data-role]").forEach(function (button) {
-        button.addEventListener("click", function () {
-          const roleId = button.getAttribute("data-role");
-          state.selectedRole = roleId;
-          resetDetailState(roleId);
-          state.view = "detail";
-          render();
-        });
-      });
-    }
-
-    function renderCodeLine(num, content, classes) {
-      return `
-        <div class="code-line">
-          <span class="code-num">${num}</span>
-          <span class="code-text ${classes || ""}">${escapeHtml(content)}</span>
-        </div>
-      `;
-    }
-
-    function renderDeveloperContent(role, type) {
-      const lines = [];
-      if (type === "mission") {
-        lines.push(renderCodeLine(1, "# " + role.title.toUpperCase(), "code-blue"));
-        lines.push(renderCodeLine(2, "", ""));
-        lines.push(renderCodeLine(3, "> MISSION BRIEF:", "code-purple"));
-        lines.push(renderCodeLine(4, '  "' + role.description + '"', ""));
-        lines.push(renderCodeLine(5, "", ""));
-        lines.push(renderCodeLine(6, "## RESPONSIBILITIES", "code-blue"));
-        role.responsibilities.forEach(function (item, index) {
-          lines.push(renderCodeLine(7 + index, "- [ ] " + item, ""));
-        });
-      }
-      if (type === "stack") {
-        lines.push(renderCodeLine(1, "{", "code-yellow"));
-        lines.push(renderCodeLine(2, '  "role": "' + role.subtitle + '",', "code-green"));
-        lines.push(renderCodeLine(3, '  "requirements": [', "code-yellow"));
-        role.requirements.forEach(function (item, index) {
-          lines.push(renderCodeLine(4 + index, '    "' + item + '",', "code-orange"));
-        });
-        lines.push(renderCodeLine(4 + role.requirements.length, "  ],", "code-yellow"));
-        lines.push(renderCodeLine(5 + role.requirements.length, '  "culture_fit": "Resolver > Complicar"', "code-green"));
-        lines.push(renderCodeLine(6 + role.requirements.length, "}", "code-yellow"));
-      }
-      if (type === "offer") {
-        lines.push(renderCodeLine(1, "salary:", "code-red"));
-        lines.push(renderCodeLine(2, "  value: " + role.salary, ""));
-        lines.push(renderCodeLine(3, "benefits:", "code-red"));
-        lines.push(renderCodeLine(4, "  - Remote First", ""));
-        lines.push(renderCodeLine(5, "  - AI Tools Provided", ""));
-        lines.push(renderCodeLine(6, "  - No Legacy Code", ""));
-        lines.push(renderCodeLine(7, "", ""));
-        lines.push(renderCodeLine(8, "# READY TO DEPLOY?", "code-muted code-italic"));
-      }
-      return '<div class="code-view">' + lines.join("") + "</div>";
-    }
-
-    function renderDeveloperDetail() {
-      const role = ROLES.developer;
-      const activeFile = state.detail.developer.activeFile;
-      const files = [
-        { id: "mission", name: "mission_brief.md", iconName: "fileCode" },
-        { id: "stack", name: "system_reqs.json", iconName: "cpu" },
-        { id: "offer", name: "compensation.yml", iconName: "dollarSign" }
-      ];
-
-      APP.innerHTML = `
-        <div class="developer-shell">
-          <div class="dev-topbar">
-            <div class="dev-topbar-left">
-              <div class="dev-traffic">
-                <button class="dev-dot red" type="button" title="Close / Back" data-action="back"></button>
-                <div class="dev-dot yellow"></div>
-                <div class="dev-dot green"></div>
-              </div>
-              <span class="dev-host">wespeak_recruitment — -bash — 80x24</span>
-            </div>
-            <a class="dev-exit" href="https://wespeak.mx" target="_blank" rel="noreferrer">exit_to_host()</a>
-          </div>
-
-          <div class="dev-body">
-            <aside class="dev-sidebar">
-              <div class="dev-sidebar-title">Explorer</div>
-              <div class="dev-explorer">
-                <div class="dev-tree-root">${icon("chevronRight", 14, "", 2)} <span>PROJECT_WESPEAK</span></div>
-                <div class="dev-file-list">
-                  ${files.map(function (file) {
-                    return `
-                      <button class="dev-file ${activeFile === file.id ? "active" : ""}" type="button" data-file="${file.id}">
-                        ${icon(file.iconName, 14, "", 1.9)}
-                        <span>${file.name}</span>
-                      </button>
-                    `;
-                  }).join("")}
-                  <button class="dev-apply-file pulse" type="button" data-action="apply">
-                    ${icon("terminal", 14, "", 1.9)}
-                    <span>run_apply.sh</span>
-                  </button>
-                </div>
-              </div>
-              <div class="dev-footer">STATUS: ONLINE<br>BRANCH: main</div>
-            </aside>
-
-            <section class="dev-main">
-              <div class="dev-tabs">
-                ${files.map(function (file) {
-                  const isActive = activeFile === file.id;
-                  return `
-                    <button class="dev-tab ${isActive ? "active" : ""}" type="button" data-file="${file.id}">
-                      <span>${file.name}</span>
-                      ${isActive ? '<span class="dev-tab-close" data-action="back">' + icon("x", 12, "", 2) + "</span>" : ""}
-                    </button>
-                  `;
-                }).join("")}
-              </div>
-
-              <div class="dev-content">
-                ${renderDeveloperContent(role, activeFile)}
-              </div>
-
-              <div class="dev-terminal">
-                <span style="color:#22c55e;">➜</span>
-                <span class="dev-terminal-path">~/wespeak/careers</span>
-                <span class="dev-terminal-line">$ <span class="terminal-caret">_</span></span>
-                <button class="dev-primary-btn" type="button" data-action="apply">EXECUTE APPLY</button>
-              </div>
-            </section>
-          </div>
-        </div>
-      `;
-
-      APP.querySelectorAll("[data-file]").forEach(function (button) {
-        button.addEventListener("click", function () {
-          state.detail.developer.activeFile = button.getAttribute("data-file");
-          render();
-        });
-      });
-
-      APP.querySelectorAll('[data-action="back"]').forEach(function (button) {
-        button.addEventListener("click", function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          state.view = "intro";
-          state.selectedRole = null;
-          render();
-        });
-      });
-
-      APP.querySelectorAll('[data-action="apply"]').forEach(function (button) {
-        button.addEventListener("click", openApplication);
-      });
-    }
-
-    function renderCreatorScene(role, sceneIndex) {
-      if (sceneIndex === 0) {
-        return `
-          <div class="creator-hero">
-            <h1 class="creator-hero-title">${escapeHtml(role.title.toUpperCase())}</h1>
-            <p class="creator-hero-copy">"${escapeHtml(role.description)}"</p>
-          </div>
-        `;
-      }
-
-      if (sceneIndex === 1) {
-        return `
-          <div>
-            <h2 class="creator-section-title stroke-text">YOUR MISSION</h2>
-            <div class="creator-grid">
-              ${role.responsibilities.map(function (item, index) {
-                return `
-                  <div class="creator-card" style="animation-delay:${index * 90}ms">
-                    <div style="margin-bottom:1rem;color:#ef4444;">${icon("aperture", 28)}</div>
-                    <p>${escapeHtml(item)}</p>
-                  </div>
-                `;
-              }).join("")}
-            </div>
-          </div>
-        `;
-      }
-
-      if (sceneIndex === 2) {
-        return `
-          <div style="text-align:center;">
-            <h2 class="creator-section-title">REQUIREMENTS</h2>
-            <div class="creator-pill-wrap">
-              ${role.requirements.map(function (item) {
-                return '<span class="creator-pill">' + escapeHtml(item) + "</span>";
-              }).join("")}
-            </div>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="creator-payoff">
-          <p class="creator-payoff-label">Monthly Compensation</p>
-          <p class="creator-payoff-amount">${escapeHtml(role.salary)}</p>
-          <button class="creator-primary-btn" type="button" data-action="apply">START RECORDING</button>
-          <div>
-            <a class="creator-return" href="https://wespeak.mx" target="_blank" rel="noreferrer">Cancel & Return to Home</a>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderCreatorDetail() {
-      const role = ROLES.creator;
-      const sceneIndex = state.detail.creator.sceneIndex;
-      const scenes = [
-        { subtitle: "Scene 1" },
-        { subtitle: "Scene 2" },
-        { subtitle: "Scene 3" },
-        { subtitle: "Final Cut" }
-      ];
-
-      APP.innerHTML = `
-        <div class="creator-shell">
-          <div class="creator-overlay">
-            <div class="view-corner top-left"></div>
-            <div class="view-corner top-right"></div>
-            <div class="view-corner bottom-left"></div>
-            <div class="view-corner bottom-right"></div>
-            <div class="creator-hud">
-              <span class="creator-hud-rec">${icon("disc", 8, "", 2)} REC</span>
-              <span>${scenes[sceneIndex].subtitle}</span>
-              <span>ISO 800</span>
-              <span>4K 60FPS</span>
-              <span style="display:inline-flex;align-items:center;gap:0.35rem;">${icon("battery", 10, "", 1.8)} 100%</span>
-            </div>
-            <button class="creator-close" type="button" data-action="back">${icon("x", 20)}</button>
-          </div>
-
-          <div class="creator-stage">
-            <div class="creator-scene">
-              ${renderCreatorScene(role, sceneIndex)}
-            </div>
-          </div>
-
-          <div class="creator-footer">
-            <div class="creator-dots">
-              ${scenes.map(function (_, index) {
-                return '<span class="creator-dot ' + (index === sceneIndex ? "active" : "") + '"></span>';
-              }).join("")}
-            </div>
-            <div class="creator-nav">
-              <button class="creator-nav-btn" type="button" data-action="prev" ${sceneIndex === 0 ? "disabled" : ""}>${icon("chevronLeft", 22)}</button>
-              <button class="creator-nav-btn primary" type="button" data-action="next" ${sceneIndex === scenes.length - 1 ? "disabled" : ""}>${icon("chevronRight", 22)}</button>
-            </div>
-          </div>
-        </div>
-      `;
-
-      APP.querySelector('[data-action="back"]').addEventListener("click", function () {
-        state.view = "intro";
-        state.selectedRole = null;
-        render();
-      });
-
-      const prev = APP.querySelector('[data-action="prev"]');
-      const next = APP.querySelector('[data-action="next"]');
-      if (prev) {
-        prev.addEventListener("click", function () {
-          state.detail.creator.sceneIndex = Math.max(0, state.detail.creator.sceneIndex - 1);
-          render();
-        });
-      }
-      if (next) {
-        next.addEventListener("click", function () {
-          state.detail.creator.sceneIndex = Math.min(3, state.detail.creator.sceneIndex + 1);
-          render();
-        });
-      }
-      const apply = APP.querySelector('[data-action="apply"]');
-      if (apply) {
-        apply.addEventListener("click", openApplication);
-      }
-    }
-
-    function getCommunitySequence(role) {
-      return [
-        { type: "text", html: "¡Hola! 👋 Revisamos tu perfil y nos encanta tu vibra." },
-        { type: "text", html: "Estamos buscando a nuestro próximo <strong>" + escapeHtml(role.title) + "</strong>. Alguien que no solo publique, sino que construya una comunidad real y sea la voz de la marca." },
-        { type: "card", title: "Tus misiones diarias 🎯", items: role.responsibilities },
-        { type: "card", title: "Lo que necesitas traer a la mesa 🧠", items: role.requirements },
-        { type: "text", html: "Ofrecemos <strong>" + escapeHtml(role.salary) + "</strong>, trabajo 100% remoto, flexibilidad de horario y la libertad de proponer ideas locas. 🚀" },
-        { type: "text", html: "¿Te animas a tomar el control de nuestras redes?" }
-      ];
-    }
-
-    function communityAvatar() {
-      return `
-        <div class="chat-avatar-frame">
-          <div class="avatar-core">WS</div>
-        </div>
-      `;
-    }
-
-    function renderCommunityBubble(message) {
-      return `
-        <div class="chat-message-row">
-          ${communityAvatar()}
-          <div class="chat-bubble">${message.html}</div>
-        </div>
-      `;
-    }
-
-    function renderCommunityCard(card) {
-      return `
-        <div class="chat-message-row card">
-          ${communityAvatar()}
-          <div class="chat-card-box">
-            <h4 class="chat-card-title">${escapeHtml(card.title)}</h4>
-            <ul class="chat-card-list">
-              ${card.items.map(function (item) {
-                return `
-                  <li class="chat-card-item">
-                    ${icon("checkCircle", 16, "", 1.8)}
-                    <span>${escapeHtml(item)}</span>
-                  </li>
-                `;
-              }).join("")}
-            </ul>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderCommunityMessages(messagesShown) {
-      const role = ROLES.community;
-      const sequence = getCommunitySequence(role);
-      return sequence.slice(0, messagesShown).map(function (entry) {
-        return entry.type === "card" ? renderCommunityCard(entry) : renderCommunityBubble(entry);
-      }).join("");
-    }
-
-    function renderCommunityDetail() {
-      const totalMessages = getCommunitySequence(ROLES.community).length;
-      const shown = state.detail.community.messagesShown;
-      const isDone = shown >= totalMessages;
-
-      APP.innerHTML = `
-        <div class="community-shell">
-          <div class="community-bg"></div>
-          <div class="phone-shell">
-            <div class="phone-notch"></div>
-
-            <div class="chat-header">
-              <div class="chat-header-left">
-                <button class="icon-btn" type="button" data-action="back">${icon("chevronLeft", 26)}</button>
-                <div class="chat-brand">
-                  ${communityAvatar()}
-                  <div class="chat-brand-copy">
-                    <div class="chat-brand-name">
-                      <span>WeSpeak</span>
-                      ${icon("badgeCheck", 14, "", 1.9)}
-                    </div>
-                    <span class="chat-status" id="chatStatus">${isDone ? "En línea ahora" : "Escribiendo..."}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="chat-header-actions">
-                <button class="icon-btn" type="button" aria-label="Call">${icon("phone", 18)}</button>
-                <button class="icon-btn" type="button" aria-label="Video">${icon("video", 18)}</button>
-              </div>
-            </div>
-
-            <div class="chat-scroll" id="chatScroll">
-              <div class="chat-timestamp">Hoy 10:41 a.m.</div>
-              <div id="communityMessages">${renderCommunityMessages(shown)}</div>
-              <div class="typing-indicator ${isDone ? "hidden" : ""}" id="typingIndicator">
-                ${communityAvatar()}
-                <div class="typing-bubble">
-                  <span class="typing-dot"></span>
-                  <span class="typing-dot"></span>
-                  <span class="typing-dot"></span>
-                </div>
-              </div>
-            </div>
-
-            <div class="chat-input-wrap">
-              <div class="chat-input-shell">
-                <button class="chat-input-camera" type="button" aria-label="Camera">${icon("camera", 16)}</button>
-                <input class="chat-input" type="text" placeholder="Escribe un mensaje..." readonly>
-                <button class="chat-apply-btn ${isDone ? "" : "hidden"}" type="button" id="communityApply">¡Aplicar!</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      APP.querySelector('[data-action="back"]').addEventListener("click", function () {
-        clearTimeout(communityTimer);
-        state.view = "intro";
-        state.selectedRole = null;
-        render();
-      });
-
-      const applyButton = document.getElementById("communityApply");
-      if (applyButton) {
-        applyButton.addEventListener("click", openApplication);
-      }
-
-      scrollCommunityToBottom();
-      startCommunitySequence();
-    }
-
-    function scrollCommunityToBottom() {
-      const scroll = document.getElementById("chatScroll");
-      if (scroll) {
-        scroll.scrollTo({ top: scroll.scrollHeight, behavior: "smooth" });
-      }
-    }
-
-    function startCommunitySequence() {
-      clearTimeout(communityTimer);
-      const totalMessages = getCommunitySequence(ROLES.community).length;
-      if (state.detail.community.messagesShown >= totalMessages) {
-        const status = document.getElementById("chatStatus");
-        const typing = document.getElementById("typingIndicator");
-        const applyButton = document.getElementById("communityApply");
-        if (status) status.textContent = "En línea ahora";
-        if (typing) typing.classList.add("hidden");
-        if (applyButton) applyButton.classList.remove("hidden");
-        return;
-      }
-
-      communityTimer = window.setTimeout(function () {
-        const nextIndex = state.detail.community.messagesShown;
-        const sequence = getCommunitySequence(ROLES.community);
-        const entry = sequence[nextIndex];
-        state.detail.community.messagesShown += 1;
-
-        const container = document.getElementById("communityMessages");
-        if (container && entry) {
-          container.insertAdjacentHTML("beforeend", entry.type === "card" ? renderCommunityCard(entry) : renderCommunityBubble(entry));
+    // Handle Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-in-up');
+          entry.target.classList.remove('opacity-0-init');
+          observer.unobserve(entry.target);
         }
-
-        if (state.detail.community.messagesShown >= sequence.length) {
-          const status = document.getElementById("chatStatus");
-          const typing = document.getElementById("typingIndicator");
-          const applyButton = document.getElementById("communityApply");
-          if (status) status.textContent = "En línea ahora";
-          if (typing) typing.classList.add("hidden");
-          if (applyButton) applyButton.classList.remove("hidden");
-        } else {
-          startCommunitySequence();
-        }
-
-        scrollCommunityToBottom();
-      }, 1800);
-    }
-
-    function renderApplicationBackground(roleId) {
-      const theme = THEMES[roleId];
-      const role = ROLES[roleId];
-      const stepIndex = state.application.stepIndex;
-      const creatorBadge = roleId === "creator" ? '<div class="application-rec">REC • 00:0' + stepIndex + ':00</div>' : "";
-      const hud = theme.hud ? '<div class="application-hud">' + escapeHtml(theme.hud).replace(/\\n/g, "<br>") + "</div>" : "";
-      return '<div class="application-bg"></div>' + creatorBadge + hud;
-    }
-
-    function renderQuestionInput(roleId, question) {
-      const answer = state.application.answers[question.id] || "";
-
-      if (question.type === "select") {
-        return `
-          <div class="select-list">
-            ${question.options.map(function (option, index) {
-              return `
-                <button class="select-option ${answer === option ? "active" : ""}" type="button" data-option-index="${index}">
-                  <div class="select-option-row">
-                    ${roleId === "developer" ? '<span>' + (answer === option ? "[x]" : "[ ]") + "</span>" : ""}
-                    <span>${escapeHtml(option)}</span>
-                  </div>
-                </button>
-              `;
-            }).join("")}
-          </div>
-        `;
-      }
-
-      if (question.type === "textarea") {
-        return `
-          <textarea class="application-field" data-answer-input placeholder="${escapeHtml(question.placeholder || "")}">${escapeHtml(answer)}</textarea>
-        `;
-      }
-
-      return `
-        <input class="application-field" data-answer-input type="text" value="${escapeHtml(answer)}" placeholder="${escapeHtml(question.placeholder || "")}">
-      `;
-    }
-
-    function renderApplicationView() {
-      const roleId = state.selectedRole;
-      const theme = THEMES[roleId];
-      const questions = getApplicationQuestions(roleId);
-      const question = questions[state.application.stepIndex];
-      const progress = ((state.application.stepIndex + 1) / questions.length) * 100;
-      const commonCount = COMMON_QUESTIONS.length;
-      const roleCount = ROLE_QUESTIONS[roleId].length;
-      const level = state.application.stepIndex < commonCount ? 1 : state.application.stepIndex < commonCount + roleCount ? 2 : 3;
-
-      APP.innerHTML = `
-        <div class="application-shell" data-theme="${roleId}" style="--app-accent:${theme.accent};--app-soft:${theme.soft};--app-bg:${theme.bg};--app-text:${theme.text};--app-input:${theme.input};--app-border:${theme.border};--app-button-bg:${theme.buttonBg};--app-button-text:${theme.buttonText};--app-option-border:${theme.border};--app-option-text:${theme.text};">
-          ${renderApplicationBackground(roleId)}
-
-          <div class="application-header">
-            <div class="application-header-left">
-              <span style="color:${theme.accent};display:inline-flex;align-items:center;">
-                ${roleId === "developer" ? icon("terminal", 22) : roleId === "creator" ? icon("aperture", 22) : icon("messageCircle", 22)}
-              </span>
-              <span class="application-level">Level ${level} / 3</span>
-            </div>
-            <button class="application-close" type="button" data-action="close">${icon("x", 20)}</button>
-          </div>
-
-          ${state.application.isCompleted ? `
-            <div class="completion-screen">
-              <div class="completion-card">
-                <div class="completion-icon">${icon("send", 46)}</div>
-                <h2 class="completion-title">${roleId === "developer" ? "SYSTEM COMPILED" : roleId === "creator" ? "IT'S A WRAP" : "MESSAGE SENT"}</h2>
-                <p class="completion-copy">El PDF se ha descargado en tu máquina.<br><strong style="color:#fff;">Envíanoslo para desbloquear el siguiente nivel.</strong></p>
-                <div>
-                  <button class="completion-primary" type="button" data-action="email">ENVIAR AHORA</button>
-                </div>
-                <a class="completion-secondary" href="https://wespeak.mx" target="_blank" rel="noreferrer">${icon("home", 16)} Return to WeSpeak.mx</a>
-              </div>
-            </div>
-          ` : `
-            <div class="application-main">
-              <div class="question-wrap" id="questionWrap">
-                <label class="question-label">${roleId === "developer" ? "&gt; " + escapeHtml(question.label) : escapeHtml(question.label)}</label>
-                ${renderQuestionInput(roleId, question)}
-
-                ${question.type === "select" ? `
-                  <div class="question-footer">
-                    <div class="question-hint">${state.application.isGenerating ? "Generating PDF..." : ""}</div>
-                    <button class="confirm-btn" type="button" data-action="next" ${state.application.answers[question.id] ? "" : "disabled"}>Confirm Selection</button>
-                  </div>
-                ` : question.type === "textarea" ? `
-                  <div class="question-footer">
-                    <div class="question-hint">${state.application.isGenerating ? "Generating PDF..." : ""}</div>
-                    <button class="app-next-btn" type="button" data-action="next">Next ${icon("chevronRight", 14)}</button>
-                  </div>
-                ` : `
-                  <div class="question-footer">
-                    <div class="question-hint">Press <span class="keycap">Enter</span> to continue</div>
-                    <div class="question-hint">${state.application.isGenerating ? "Generating PDF..." : ""}</div>
-                  </div>
-                `}
-              </div>
-            </div>
-          `}
-
-          <div class="application-progress">
-            <div class="application-progress-bar" style="width:${progress}%"></div>
-          </div>
-        </div>
-      `;
-
-      APP.querySelector('[data-action="close"]').addEventListener("click", closeApplication);
-
-      if (state.application.isCompleted) {
-        APP.querySelector('[data-action="email"]').addEventListener("click", sendEmail);
-        return;
-      }
-
-      const input = APP.querySelector("[data-answer-input]");
-      if (input) {
-        input.addEventListener("input", function (event) {
-          state.application.answers[question.id] = event.target.value;
-        });
-
-        if (question.type !== "textarea") {
-          input.addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              nextApplicationStep();
-            }
-          });
-        }
-
-        clearTimeout(focusTimer);
-        focusTimer = window.setTimeout(function () {
-          input.focus();
-          if (input.setSelectionRange && question.type !== "textarea") {
-            const value = input.value || "";
-            input.setSelectionRange(value.length, value.length);
-          }
-        }, 40);
-      }
-
-      APP.querySelectorAll("[data-option-index]").forEach(function (button) {
-        button.addEventListener("click", function () {
-          const option = question.options[Number(button.getAttribute("data-option-index"))];
-          state.application.answers[question.id] = option;
-          render();
-        });
       });
+    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
 
-      const nextButton = APP.querySelector('[data-action="next"]');
-      if (nextButton) {
-        nextButton.addEventListener("click", nextApplicationStep);
-      }
-    }
-
-    function flashQuestion() {
-      const wrap = document.getElementById("questionWrap");
-      if (!wrap) return;
-      wrap.classList.remove("shake");
-      void wrap.offsetWidth;
-      wrap.classList.add("shake");
-    }
-
-    function nextApplicationStep() {
-      const roleId = state.selectedRole;
-      const questions = getApplicationQuestions(roleId);
-      const question = questions[state.application.stepIndex];
-      const answer = (state.application.answers[question.id] || "").trim();
-      if (!answer) {
-        flashQuestion();
-        return;
-      }
-
-      if (state.application.stepIndex < questions.length - 1) {
-        state.application.stepIndex += 1;
-        render();
-        return;
-      }
-
-      generatePDFAndFinish();
-    }
-
-    function generatePDFAndFinish() {
-      state.application.isGenerating = true;
-      render();
-
-      if (!window.jspdf || !window.jspdf.jsPDF) {
-        state.application.isGenerating = false;
-        alert("No se pudo cargar jsPDF para generar el archivo.");
-        render();
-        return;
-      }
-
-      const roleId = state.selectedRole;
-      const role = ROLES[roleId];
-      const questions = getApplicationQuestions(roleId);
-      const doc = new window.jspdf.jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 20;
-      let yPos = 20;
-
-      const headerColor = roleId === "developer" ? [10, 10, 30] : roleId === "creator" ? [200, 0, 200] : [100, 0, 200];
-      doc.setFillColor.apply(doc, headerColor);
-      doc.rect(0, 0, pageWidth, 40, "F");
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
-      doc.setTextColor(255, 255, 255);
-      doc.text("WESPEAK APPLICATION", margin, 25);
-      doc.setFontSize(10);
-      doc.text("ROLE: " + role.title.toUpperCase(), margin, 35);
-
-      yPos = 60;
-      doc.setTextColor(0, 0, 0);
-
-      questions.forEach(function (question) {
-        if (yPos > 270) {
-          doc.addPage();
-          yPos = 20;
-        }
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text(question.label.toUpperCase(), margin, yPos);
-        yPos += 7;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        const answer = state.application.answers[question.id] || "N/A";
-        const split = doc.splitTextToSize(answer, pageWidth - margin * 2);
-        doc.text(split, margin, yPos);
-        yPos += split.length * 6 + 10;
-      });
-
-      const fileName = "WeSpeak_" + roleId + "_" + ((state.application.answers.name || "Candidate").replace(/\s+/g, "_")) + ".pdf";
-      doc.save(fileName);
-
-      clearTimeout(completeTimer);
-      completeTimer = window.setTimeout(function () {
-        state.application.isGenerating = false;
-        state.application.isCompleted = true;
-        render();
-      }, 1000);
-    }
-
-    function sendEmail() {
-      const roleId = state.selectedRole;
-      const role = ROLES[roleId];
-      const answers = state.application.answers;
-      const subject = "[" + roleId.toUpperCase() + "] Application - " + (answers.name || "");
-      const body = [
-        "Hola equipo WeSpeak,",
-        "",
-        "Level complete. Adjunto mi PDF de aplicación para " + role.title + ".",
-        "",
-        "Portfolio: " + (answers.portfolio || ""),
-        "",
-        "// End transmission"
-      ].join("\n");
-      window.location.href = "mailto:contacto@wespeak.mx?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-    }
-
-    function openApplication() {
-      clearTimeout(communityTimer);
-      state.application = getInitialApplicationState();
-      state.view = "application";
-      render();
-    }
-
-    function closeApplication() {
-      clearTimeout(completeTimer);
-      clearTimeout(focusTimer);
-      resetDetailState(state.selectedRole);
-      state.application = getInitialApplicationState();
-      state.view = "detail";
-      render();
-    }
-
-    function render() {
-      clearTimeout(focusTimer);
-      if (state.view !== "detail" || state.selectedRole !== "community") {
-        clearTimeout(communityTimer);
-      }
-
-      if (!state.selectedRole && state.view !== "intro") {
-        state.view = "intro";
-      }
-
-      if (state.view === "intro") {
-        renderIntro();
-        return;
-      }
-
-      if (state.view === "detail") {
-        if (state.selectedRole === "developer") {
-          renderDeveloperDetail();
-          return;
-        }
-        if (state.selectedRole === "creator") {
-          renderCreatorDetail();
-          return;
-        }
-        renderCommunityDetail();
-        return;
-      }
-
-      renderApplicationView();
-    }
-
-    render();
+    document.querySelectorAll('.scroll-anim').forEach((el) => {
+      observer.observe(el);
+    });
   </script>
 </body>
 </html>
