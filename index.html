@@ -1,178 +1,1670 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" class="scroll-smooth">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WeSpeak | Talent Call</title>
-  <meta name="description" content="WeSpeak Talent Call: Creador/a de Contenido con IA y Asistente Personal Ejecutivo." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Montserrat','sans-serif'] },
-          colors: { ink:'#050505', bone:'#f7f7f2', smoke:'#8a8a8a', card:'#0b0b0b', redline:'#2a0909', greenline:'#021008' },
-          boxShadow: { 'white-glow':'0 0 34px rgba(255,255,255,.24)', 'soft':'0 18px 80px rgba(0,0,0,.65)' },
-          animation: { 'marquee':'marquee 28s linear infinite', 'float':'float 8s ease-in-out infinite', 'pulse-slow':'pulse 5s ease-in-out infinite' },
-          keyframes: { marquee:{'0%':{transform:'translateX(0)'},'100%':{transform:'translateX(-50%)'}}, float:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-16px)'}} }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeSpeak | Talent Call</title>
+    <meta
+      name="description"
+      content="WeSpeak Talent Call: Creador/a de Contenido con IA y Asistente Personal Ejecutivo."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Montserrat", "sans-serif"] },
+            colors: {
+              ink: "#050505",
+              bone: "#f7f7f2",
+              smoke: "#8a8a8a",
+              card: "#0b0b0b",
+              redline: "#2a0909",
+              greenline: "#021008",
+            },
+            boxShadow: {
+              "white-glow": "0 0 34px rgba(255,255,255,.24)",
+              soft: "0 18px 80px rgba(0,0,0,.65)",
+            },
+            animation: {
+              marquee: "marquee 28s linear infinite",
+              float: "float 8s ease-in-out infinite",
+              "pulse-slow": "pulse 5s ease-in-out infinite",
+            },
+            keyframes: {
+              marquee: {
+                "0%": { transform: "translateX(0)" },
+                "100%": { transform: "translateX(-50%)" },
+              },
+              float: {
+                "0%,100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-16px)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :root {
+        --black: #050505;
+        --white: #f7f7f2;
+        --muted: #8a8a8a;
+        --line: rgba(255, 255, 255, 0.12);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: 90px;
+      }
+      body {
+        margin: 0;
+        background: var(--black);
+        color: var(--white);
+        font-family: Montserrat, sans-serif;
+        overflow-x: hidden;
+      }
+      body:before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0.055;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      }
+      .noise-grid {
+        background-image:
+          radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 34%),
+          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        background-size:
+          auto,
+          42px 42px,
+          42px 42px;
+      }
+      .outline {
+        -webkit-text-stroke: 1.4px rgba(255, 255, 255, 0.72);
+        color: transparent;
+        text-shadow: none;
+      }
+      .outline-soft {
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.18);
+        color: transparent;
+      }
+      .glow {
+        text-shadow: 0 0 22px rgba(255, 255, 255, 0.38);
+      }
+      .pill {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(14px);
+      }
+      .glass {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.025)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.02),
+          0 28px 80px rgba(0, 0, 0, 0.7);
+      }
+      .card-border {
+        position: relative;
+      }
+      .card-border:before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.8),
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.35)
+        );
+        -webkit-mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        opacity: 0.75;
+      }
+      .role-card[aria-selected="true"] {
+        background: #f7f7f2;
+        color: #050505;
+        transform: translateY(-6px);
+        box-shadow: 0 0 44px rgba(255, 255, 255, 0.24);
+      }
+      .role-card[aria-selected="true"] .muted-on-select {
+        color: #303030;
+      }
+      .role-card[aria-selected="true"] .invert-pill {
+        border-color: rgba(0, 0, 0, 0.16);
+        background: rgba(0, 0, 0, 0.06);
+        color: #050505;
+      }
+      .form-role-toggle[aria-pressed="true"] {
+        background: #f7f7f2;
+        color: #050505;
+        border-color: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 0 28px rgba(255, 255, 255, 0.18);
+      }
+      .form-role-toggle[aria-pressed="true"] .role-kicker {
+        color: rgba(5, 5, 5, 0.5);
+      }
+      .form-role-toggle[aria-pressed="true"] .role-title {
+        color: #050505;
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .field-invalid {
+        border-color: rgba(248, 113, 113, 0.95) !important;
+        box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.2);
+      }
+      .field-valid {
+        border-color: rgba(74, 222, 128, 0.5) !important;
+      }
+      .wizard-step {
+        display: none;
+      }
+      .wizard-step.active {
+        display: block;
+      }
+      .wizard-dot[aria-current="step"] {
+        background: #f7f7f2;
+        color: #050505;
+        border-color: rgba(255, 255, 255, 0.7);
+      }
+      .wizard-dot {
+        appearance: none;
+        background: transparent;
+        width: 100%;
+        cursor: pointer;
+      }
+      body.modal-open {
+        overflow: hidden;
+      }
+      .modal-shell {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(5, 5, 5, 0.74);
+        backdrop-filter: blur(18px);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.3s ease,
+          visibility 0.3s ease;
+      }
+      .modal-shell.open {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .modal-panel {
+        width: min(100%, 920px);
+        max-height: min(92vh, 980px);
+        overflow-y: auto;
+      }
+      .hidden-field {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(26px);
+        filter: blur(8px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease,
+          filter 0.8s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+        .reveal {
+          opacity: 1;
+          transform: none;
+          filter: none;
         }
       }
-    }
-  </script>
-  <style>
-    :root{--black:#050505;--white:#f7f7f2;--muted:#8a8a8a;--line:rgba(255,255,255,.12)}
-    *{box-sizing:border-box}
-    html{scroll-padding-top:90px}
-    body{margin:0;background:var(--black);color:var(--white);font-family:Montserrat,sans-serif;overflow-x:hidden}
-    body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.055;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E")}
-    .noise-grid{background-image:radial-gradient(circle at 50% 0%,rgba(255,255,255,.08),transparent 34%),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:auto,42px 42px,42px 42px}
-    .outline{-webkit-text-stroke:1.4px rgba(255,255,255,.72);color:transparent;text-shadow:none}
-    .outline-soft{-webkit-text-stroke:1px rgba(255,255,255,.18);color:transparent}
-    .glow{text-shadow:0 0 22px rgba(255,255,255,.38)}
-    .pill{border:1px solid var(--line);background:rgba(255,255,255,.04);backdrop-filter:blur(14px)}
-    .glass{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.14);box-shadow:0 0 0 1px rgba(255,255,255,.02),0 28px 80px rgba(0,0,0,.7)}
-    .card-border{position:relative}.card-border:before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(255,255,255,.08),rgba(255,255,255,.35));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.75}
-    .role-card[aria-selected="true"]{background:#f7f7f2;color:#050505;transform:translateY(-6px);box-shadow:0 0 44px rgba(255,255,255,.24)}
-    .role-card[aria-selected="true"] .muted-on-select{color:#303030}.role-card[aria-selected="true"] .invert-pill{border-color:rgba(0,0,0,.16);background:rgba(0,0,0,.06);color:#050505}
-    .panel{display:none}.panel.active{display:block}
-    .reveal{opacity:0;transform:translateY(26px);filter:blur(8px);transition:opacity .8s ease,transform .8s ease,filter .8s ease}.reveal.visible{opacity:1;transform:none;filter:none}
-    @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none;filter:none}}
-  </style>
-</head>
-<body>
-  <header id="topbar" class="fixed top-0 left-0 right-0 z-40 py-5 transition-all duration-500">
-    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
-      <a href="#top" class="flex items-center gap-3" aria-label="WeSpeak Talent Call">
-        <img src="https://raw.githubusercontent.com/ryandoelsol/wespeak/Pagina-web/logowespeak.png" alt="WeSpeak Logo" class="h-10 w-auto" />
-      </a>
-      <nav class="hidden md:flex items-center gap-8 px-7 py-3 rounded-full border border-white/10 bg-black/35 backdrop-blur-xl text-[10px] uppercase tracking-[.32em] font-bold text-white/70">
-        <a href="#manifiesto" class="hover:text-white">Manifiesto</a>
-        <a href="#vacantes" class="hover:text-white">Vacantes</a>
-        <a href="#proceso" class="hover:text-white">Proceso</a>
-      </nav>
-      <a href="#postular" class="rounded-full bg-white text-black px-6 py-3 text-[10px] uppercase tracking-[.22em] font-black shadow-white-glow hover:scale-105 transition">Postularme</a>
+    </style>
+  </head>
+  <body>
+    <header
+      id="topbar"
+      class="fixed top-0 left-0 right-0 z-40 py-5 transition-all duration-500"
+    >
+      <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <a href="#top" class="flex items-center gap-3" aria-label="WeSpeak Talent Call">
+          <img
+            src="https://raw.githubusercontent.com/ryandoelsol/wespeak/Pagina-web/logowespeak.png"
+            alt="WeSpeak Logo"
+            class="h-10 w-auto"
+          />
+        </a>
+        <nav
+          class="hidden md:flex items-center gap-8 px-7 py-3 rounded-full border border-white/10 bg-black/35 backdrop-blur-xl text-[10px] uppercase tracking-[.32em] font-bold text-white/70"
+        >
+          <a href="#manifiesto" class="hover:text-white">Manifiesto</a>
+          <a href="#vacantes" class="hover:text-white">Vacantes</a>
+          <a href="#proceso" class="hover:text-white">Proceso</a>
+        </nav>
+        <a
+          href="#postular"
+          class="rounded-full bg-white text-black px-6 py-3 text-[10px] uppercase tracking-[.22em] font-black shadow-white-glow hover:scale-105 transition"
+          >Postularme</a
+        >
+      </div>
+    </header>
+
+    <main id="top">
+      <section
+        class="relative min-h-screen flex items-center justify-center noise-grid overflow-hidden px-6"
+      >
+        <div
+          class="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,.13),transparent_22%),linear-gradient(180deg,rgba(0,0,0,.1),#050505_88%)]"
+        ></div>
+        <div
+          class="absolute top-[18%] left-1/2 -translate-x-1/2 w-[620px] h-[620px] rounded-full border border-white/10 animate-float"
+        ></div>
+        <div class="relative z-10 text-center max-w-5xl mx-auto pt-20">
+          <div
+            class="inline-flex items-center gap-3 pill rounded-full px-5 py-2 mb-9 reveal"
+          >
+            <span class="w-2 h-2 rounded-full bg-white shadow-white-glow"></span
+            ><span
+              class="text-[10px] uppercase tracking-[.34em] font-bold text-white/70"
+              >Talent call · WeSpeak.mx</span
+            >
+          </div>
+          <h1
+            class="font-black leading-[.86] tracking-[-.07em] text-[18vw] sm:text-[14vw] lg:text-[132px] reveal"
+          >
+            MAKE IT<br /><span class="outline tracking-[.06em] pl-[.06em]">WORK</span>
+          </h1>
+          <p
+            class="mt-8 text-white/60 text-base md:text-xl max-w-2xl mx-auto leading-relaxed reveal"
+          >
+            Buscamos dos perfiles para amplificar la operación: alguien que produzca
+            contenido con criterio e IA, y alguien que cuide agenda, pendientes y
+            seguimiento personal ejecutivo.
+          </p>
+          <div
+            class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 reveal"
+          >
+            <a
+              href="#vacantes"
+              class="rounded-full bg-white text-black px-8 py-4 text-xs uppercase tracking-[.22em] font-black shadow-white-glow hover:scale-105 transition"
+              >Ver vacantes</a
+            >
+            <a
+              href="#manifiesto"
+              class="rounded-full border border-white/15 px-8 py-4 text-xs uppercase tracking-[.22em] font-black text-white/80 hover:bg-white hover:text-black transition"
+              >El estándar</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section id="manifiesto" class="relative py-32 md:py-44 px-6 overflow-hidden">
+        <div
+          class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_15%_40%,rgba(255,255,255,.08),transparent_24%)]"
+        ></div>
+        <div class="max-w-6xl mx-auto relative z-10">
+          <div
+            class="text-[10px] uppercase tracking-[.45em] text-white/45 font-bold mb-10 reveal"
+          >
+            Prelude
+          </div>
+          <p
+            class="text-3xl md:text-6xl leading-tight font-black tracking-[-.05em] max-w-5xl reveal"
+          >
+            WeSpeak no necesita gente que solo “ayude”. Necesita personas que conviertan
+            ruido en señal:
+            <span class="text-white/45"
+              >ideas claras, ejecución rápida, documentación y criterio.</span
+            >
+          </p>
+        </div>
+      </section>
+
+      <section class="relative py-24 overflow-hidden border-y border-white/5">
+        <div
+          class="absolute inset-0 flex items-center opacity-[.07] pointer-events-none"
+        >
+          <div class="flex whitespace-nowrap animate-marquee">
+            <span class="text-[120px] md:text-[190px] font-black outline-soft mx-8"
+              >NOISE · SIGNAL · FANDOM · AUTHORITY · </span
+            ><span class="text-[120px] md:text-[190px] font-black outline-soft mx-8"
+              >NOISE · SIGNAL · FANDOM · AUTHORITY ·
+            </span>
+          </div>
+        </div>
+        <div class="relative z-10 max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-5">
+          <div class="glass rounded-[32px] p-8 reveal">
+            <div class="text-6xl font-black text-white/10 mb-8">01</div>
+            <h2 class="text-2xl font-black mb-4">No vanity work.</h2>
+            <p class="text-white/50 leading-relaxed text-sm">
+              El trabajo debe mover algo: claridad, autoridad, contenido, seguimiento o
+              velocidad.
+            </p>
+          </div>
+          <div class="glass rounded-[32px] p-8 reveal">
+            <div class="text-6xl font-black text-white/10 mb-8">02</div>
+            <h2 class="text-2xl font-black mb-4">IA con intención.</h2>
+            <p class="text-white/50 leading-relaxed text-sm">
+              No buscamos “uso ChatGPT”. Buscamos flujos concretos que eleven calidad y
+              reduzcan fricción.
+            </p>
+          </div>
+          <div class="glass rounded-[32px] p-8 reveal">
+            <div class="text-6xl font-black text-white/10 mb-8">03</div>
+            <h2 class="text-2xl font-black mb-4">Cierre de ciclos.</h2>
+            <p class="text-white/50 leading-relaxed text-sm">
+              Cada pendiente debe tener salida: hecho, bloqueado, delegado,
+              calendarizado o descartado.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="vacantes" class="relative py-32 px-6 overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+          <div class="text-center max-w-4xl mx-auto mb-16 reveal">
+            <div
+              class="text-[10px] uppercase tracking-[.45em] text-white/45 font-bold mb-6"
+            >
+              Elige tu camino
+            </div>
+            <h2 class="text-5xl md:text-8xl font-black tracking-[-.07em] leading-[.9]">
+              DOS ROLES.<br /><span class="outline">MISMA BARRA.</span>
+            </h2>
+            <p class="text-white/50 mt-7 leading-relaxed">
+              Selecciona una vacante para ver exactamente qué se espera, qué evidencia
+              mandar y cómo aplicar.
+            </p>
+          </div>
+
+          <div
+            class="grid lg:grid-cols-2 gap-5 mb-10"
+            role="tablist"
+            aria-label="Vacantes WeSpeak"
+          >
+            <button
+              type="button"
+              data-role="content"
+              aria-selected="true"
+              class="role-card reveal text-left rounded-[36px] glass card-border p-8 md:p-10 transition duration-500"
+              role="tab"
+            >
+              <div class="flex justify-between items-start mb-16">
+                <span
+                  class="invert-pill pill rounded-full px-4 py-2 text-[10px] uppercase tracking-[.25em] font-black"
+                  >Vacante 01</span
+                ><span class="text-8xl font-black text-white/10 muted-on-select"
+                  >01</span
+                >
+              </div>
+              <h3
+                class="text-3xl md:text-5xl font-black tracking-[-.05em] leading-none mb-5"
+              >
+                Creador/a de Contenido con IA
+              </h3>
+              <p class="muted-on-select text-white/50 leading-relaxed">
+                Planea, pelotea, graba, edita y construye flujos donde la IA complemente
+                producción, investigación y creatividad.
+              </p>
+            </button>
+            <button
+              type="button"
+              data-role="assistant"
+              aria-selected="false"
+              class="role-card reveal text-left rounded-[36px] glass card-border p-8 md:p-10 transition duration-500"
+              role="tab"
+            >
+              <div class="flex justify-between items-start mb-16">
+                <span
+                  class="invert-pill pill rounded-full px-4 py-2 text-[10px] uppercase tracking-[.25em] font-black"
+                  >Vacante 02</span
+                ><span class="text-8xl font-black text-white/10 muted-on-select"
+                  >02</span
+                >
+              </div>
+              <h3
+                class="text-3xl md:text-5xl font-black tracking-[-.05em] leading-none mb-5"
+              >
+                Asistente Personal Ejecutivo
+              </h3>
+              <p class="muted-on-select text-white/50 leading-relaxed">
+                Ordena agenda, pendientes, correos, documentos, minutas y temas
+                personales con discreción, criterio y seguimiento.
+              </p>
+            </button>
+          </div>
+
+          <article
+            id="panel-content"
+            class="panel active glass rounded-[40px] p-6 md:p-10 reveal"
+          >
+            <div class="grid lg:grid-cols-12 gap-10">
+              <div class="lg:col-span-5">
+                <div
+                  class="pill rounded-full inline-flex px-4 py-2 text-[10px] uppercase tracking-[.28em] font-black text-white/60 mb-6"
+                >
+                  Signal maker
+                </div>
+                <h3
+                  class="text-4xl md:text-6xl font-black tracking-[-.06em] leading-none mb-6"
+                >
+                  Que la idea no se quede en junta.
+                </h3>
+                <p class="text-white/55 leading-relaxed mb-8">
+                  Este perfil traduce estrategia en contenido real. Tiene criterio
+                  creativo, sabe producir con recursos disponibles y usa IA para
+                  acelerar investigación, guion, edición, versiones y aprendizaje.
+                </p>
+                <a
+                  href="#postular"
+                  data-target="content"
+                  class="apply rounded-full bg-white text-black px-7 py-4 inline-flex text-xs uppercase tracking-[.22em] font-black shadow-white-glow"
+                  >Postular a contenido</a
+                >
+              </div>
+              <div class="lg:col-span-7 grid md:grid-cols-2 gap-5">
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">Responsabilidades</h4>
+                  <ul class="text-white/50 text-sm leading-relaxed space-y-3">
+                    <li>• Pelotear ideas y convertirlas en conceptos claros.</li>
+                    <li>• Crear guiones, shotlists y calendarios de producción.</li>
+                    <li>• Grabar con criterio visual, audio e iluminación básica.</li>
+                    <li>• Editar video corto/largo, subtítulos, ritmo y versiones.</li>
+                    <li>• Ordenar assets, aprendizajes y entregables.</li>
+                  </ul>
+                </div>
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">IA aplicada</h4>
+                  <ul class="text-white/50 text-sm leading-relaxed space-y-3">
+                    <li>• Investigación, insights y referencias visuales.</li>
+                    <li>• Prompts para guion, hooks, captions y variaciones.</li>
+                    <li>• Transcripción, síntesis, cortes y reciclaje de formatos.</li>
+                    <li>
+                      • Herramientas generativas para apoyar, no sustituir criterio.
+                    </li>
+                    <li>• Documentación del flujo y resultados.</li>
+                  </ul>
+                </div>
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">Herramientas</h4>
+                  <p class="text-white/50 text-sm leading-relaxed">
+                    Premiere, DaVinci, CapCut, After Effects básico, Canva/Figma,
+                    Drive/Notion, ChatGPT/Claude/Gemini, Runway, Descript, OpusClip,
+                    Firefly/Midjourney o equivalentes.
+                  </p>
+                </div>
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">Manda evidencia</h4>
+                  <p class="text-white/50 text-sm leading-relaxed">
+                    CV, reel/portfolio, 3 piezas producidas y una nota breve explicando
+                    un flujo de IA que ya uses para crear mejor o más rápido.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article
+            id="panel-assistant"
+            class="panel glass rounded-[40px] p-6 md:p-10 reveal"
+          >
+            <div class="grid lg:grid-cols-12 gap-10">
+              <div class="lg:col-span-5">
+                <div
+                  class="pill rounded-full inline-flex px-4 py-2 text-[10px] uppercase tracking-[.28em] font-black text-white/60 mb-6"
+                >
+                  Operating system
+                </div>
+                <h3
+                  class="text-4xl md:text-6xl font-black tracking-[-.06em] leading-none mb-6"
+                >
+                  Que nada importante se quede flotando.
+                </h3>
+                <p class="text-white/55 leading-relaxed mb-8">
+                  Este perfil protege foco, tiempo, información y seguimiento. Necesita
+                  discreción, estructura, buen juicio y capacidad para convertir caos
+                  operativo en decisiones claras.
+                </p>
+                <a
+                  href="#postular"
+                  data-target="assistant"
+                  class="apply rounded-full bg-white text-black px-7 py-4 inline-flex text-xs uppercase tracking-[.22em] font-black shadow-white-glow"
+                  >Postular a asistente</a
+                >
+              </div>
+              <div class="lg:col-span-7 grid md:grid-cols-2 gap-5">
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">Responsabilidades</h4>
+                  <ul class="text-white/50 text-sm leading-relaxed space-y-3">
+                    <li>• Manejar agenda, bloques, recordatorios y prioridades.</li>
+                    <li>• Dar seguimiento a correos, mensajes y acuerdos.</li>
+                    <li>• Ordenar documentos, facturas, tickets y comprobantes.</li>
+                    <li>• Preparar contexto antes de juntas y minutas después.</li>
+                    <li>• Coordinar temas personales/profesionales con discreción.</li>
+                  </ul>
+                </div>
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">Perfil clave</h4>
+                  <ul class="text-white/50 text-sm leading-relaxed space-y-3">
+                    <li>• Confidencialidad absoluta.</li>
+                    <li>• Comunicación breve, humana y accionable.</li>
+                    <li>• Criterio para distinguir urgencia, importancia y ruido.</li>
+                    <li>• Seguimiento obsesivo sin volverse invasivo.</li>
+                    <li>• Reporta bloqueos con propuesta de salida.</li>
+                  </ul>
+                </div>
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">Herramientas</h4>
+                  <p class="text-white/50 text-sm leading-relaxed">
+                    Google Calendar, Gmail, Drive, Docs/Sheets, WhatsApp/Telegram,
+                    Notion, Asana/ClickUp y herramientas de IA para resumir, redactar,
+                    clasificar e investigar.
+                  </p>
+                </div>
+                <div class="rounded-[28px] bg-black/40 border border-white/10 p-7">
+                  <h4 class="font-black text-xl mb-4">Manda evidencia</h4>
+                  <p class="text-white/50 text-sm leading-relaxed">
+                    CV y una nota breve: cómo ordenarías una semana con juntas,
+                    pendientes personales, facturas, correos urgentes y prioridades
+                    compitiendo.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section
+        id="proceso"
+        class="relative py-32 px-6 bg-black border-y border-white/5"
+      >
+        <div class="max-w-6xl mx-auto text-center mb-14 reveal">
+          <div
+            class="text-[10px] uppercase tracking-[.45em] text-white/45 font-bold mb-6"
+          >
+            Proceso
+          </div>
+          <h2 class="text-5xl md:text-7xl font-black tracking-[-.06em] leading-none">
+            NO CV VACÍO.<br /><span class="outline">EVIDENCIA.</span>
+          </h2>
+        </div>
+        <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-5">
+          <div class="glass rounded-[30px] p-7 reveal">
+            <span class="text-5xl font-black text-white/10">01</span>
+            <h3 class="font-black text-xl mt-8 mb-3">Aplica</h3>
+            <p class="text-white/45 text-sm leading-relaxed">
+              Envía evidencia y contexto según la vacante elegida.
+            </p>
+          </div>
+          <div class="glass rounded-[30px] p-7 reveal">
+            <span class="text-5xl font-black text-white/10">02</span>
+            <h3 class="font-black text-xl mt-8 mb-3">Filtro</h3>
+            <p class="text-white/45 text-sm leading-relaxed">
+              Revisamos criterio, ejecución, herramientas y fit cultural.
+            </p>
+          </div>
+          <div class="glass rounded-[30px] p-7 reveal">
+            <span class="text-5xl font-black text-white/10">03</span>
+            <h3 class="font-black text-xl mt-8 mb-3">Entrevista</h3>
+            <p class="text-white/45 text-sm leading-relaxed">
+              Hablamos de casos reales, proceso, orden y toma de decisiones.
+            </p>
+          </div>
+          <div class="glass rounded-[30px] p-7 reveal">
+            <span class="text-5xl font-black text-white/10">04</span>
+            <h3 class="font-black text-xl mt-8 mb-3">Prueba</h3>
+            <p class="text-white/45 text-sm leading-relaxed">
+              Ejercicio breve para ver cómo piensas y entregas.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="postular"
+        class="relative min-h-[80vh] flex items-center px-6 py-32 overflow-hidden"
+      >
+        <div class="absolute inset-0 opacity-20">
+          <div
+            class="absolute left-[-10%] top-1/3 w-[500px] h-[500px] bg-white/10 blur-[150px] rounded-full"
+          ></div>
+        </div>
+        <div
+          class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-[22vw] font-black outline-soft opacity-40 leading-none whitespace-nowrap pointer-events-none"
+        >
+          WESPEAK WE
+        </div>
+        <div
+          class="max-w-6xl mx-auto relative z-10 grid lg:grid-cols-2 gap-12 items-center"
+        >
+          <div class="reveal">
+            <h2 class="text-6xl md:text-8xl font-black tracking-[-.07em] leading-[.85]">
+              SHARE YOUR<br /><span class="outline">WORK.</span>
+            </h2>
+            <p class="text-white/55 mt-7 max-w-md leading-relaxed">
+              Si creés que puedes elevar la operación de WeSpeak, manda evidencia. Sin
+              scripts aburridos. Sin humo.
+            </p>
+          </div>
+          <div class="glass rounded-[36px] p-8 reveal">
+            <div
+              class="text-[10px] uppercase tracking-[.35em] text-white/45 font-black mb-6"
+            >
+              Aplicar por correo
+            </div>
+            <div class="grid gap-4">
+              <a
+                id="mail-content"
+                data-modal-role="content"
+                href="mailto:talento@wespeak.mx?subject=Postulaci%C3%B3n%20%C2%B7%20Creador%2Fa%20de%20Contenido%20con%20IA&body=Hola%20WeSpeak%2C%0A%0AQuiero%20postularme%20a%20la%20vacante%20de%20Creador%2Fa%20de%20Contenido%20con%20IA.%0A%0AAdjunto%20mi%20CV%2C%20portfolio%2Freel%2C%203%20piezas%20producidas%20y%20una%20nota%20breve%20sobre%20un%20flujo%20de%20IA%20que%20uso.%0A%0AGracias."
+                class="rounded-full bg-white text-black px-7 py-5 text-xs uppercase tracking-[.2em] font-black text-center shadow-white-glow"
+                aria-haspopup="dialog"
+                >Contenido + IA</a
+              >
+              <a
+                id="mail-assistant"
+                data-modal-role="assistant"
+                href="mailto:talento@wespeak.mx?subject=Postulaci%C3%B3n%20%C2%B7%20Asistente%20Personal%20Ejecutivo&body=Hola%20WeSpeak%2C%0A%0AQuiero%20postularme%20a%20la%20vacante%20de%20Asistente%20Personal%20Ejecutivo.%0A%0AAdjunto%20mi%20CV%20y%20una%20nota%20breve%20sobre%20c%C3%B3mo%20organizar%C3%ADa%20una%20semana%20con%20juntas%2C%20pendientes%2C%20facturas%20y%20correos%20urgentes.%0A%0AGracias."
+                class="rounded-full border border-white/15 px-7 py-5 text-xs uppercase tracking-[.2em] font-black text-center hover:bg-white hover:text-black transition"
+                aria-haspopup="dialog"
+                >Asistente personal</a
+              >
+            </div>
+            <p class="text-white/35 text-xs leading-relaxed mt-6">
+              Placeholder de recepción: talento@wespeak.mx. Se puede cambiar por el
+              correo final antes de publicar.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div
+      id="application-modal"
+      class="modal-shell"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Formulario de postulación"
+    >
+      <div id="application-modal-panel" class="modal-panel glass rounded-[36px] p-6 md:p-8">
+        <div class="flex justify-end mb-6">
+          <button
+            type="button"
+            data-close-application-modal
+            class="rounded-full border border-white/15 px-5 py-3 text-[10px] uppercase tracking-[.22em] font-black text-white/80 hover:bg-white hover:text-black transition"
+          >
+            Cerrar
+          </button>
+        </div>
+
+        <div
+          class="grid sm:grid-cols-2 gap-3 mb-5"
+          role="tablist"
+          aria-label="Rol de postulación en formulario"
+        >
+          <button
+            type="button"
+            data-form-role="content"
+            aria-pressed="true"
+            class="form-role-toggle rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 text-left transition"
+          >
+            <span
+              class="role-kicker block text-[10px] uppercase tracking-[.25em] text-white/45 font-black mb-2"
+              >Rol 01</span
+            >
+            <span class="role-title block text-lg font-black">Contenido + IA</span>
+          </button>
+          <button
+            type="button"
+            data-form-role="assistant"
+            aria-pressed="false"
+            class="form-role-toggle rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 text-left transition"
+          >
+            <span
+              class="role-kicker block text-[10px] uppercase tracking-[.25em] text-white/45 font-black mb-2"
+              >Rol 02</span
+            >
+            <span class="role-title block text-lg font-black">Asistente ejecutivo</span>
+          </button>
+        </div>
+
+        <form
+          id="application-form"
+          class="grid gap-5"
+          novalidate
+          data-endpoint="__GOOGLE_APPS_SCRIPT_WEB_APP_URL__"
+        >
+          <input type="hidden" name="role" id="role-field" value="content" />
+          <input type="hidden" name="startedAt" id="started-at" value="" />
+          <input type="hidden" name="pageUrl" id="page-url" value="" />
+          <input type="hidden" name="userAgent" id="user-agent" value="" />
+
+          <div class="hidden-field" aria-hidden="true">
+            <label for="company">Si eres humano, dejá este campo vacío</label>
+            <input type="text" id="company" name="company" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 md:p-5">
+            <div class="flex items-center justify-between gap-4 mb-4">
+              <p id="wizard-step-title" class="text-lg font-black">Paso 1</p>
+              <p id="wizard-step-caption" class="text-xs text-white/35">1 / 3</p>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+              <button
+                type="button"
+                class="wizard-dot rounded-full border border-white/10 px-3 py-2 text-center text-[10px] uppercase tracking-[.22em] font-black"
+                data-wizard-dot="1"
+                aria-current="step"
+              >
+                Paso 1
+              </button>
+              <button
+                type="button"
+                class="wizard-dot rounded-full border border-white/10 px-3 py-2 text-center text-[10px] uppercase tracking-[.22em] font-black text-white/45"
+                data-wizard-dot="2"
+                aria-current="false"
+              >
+                Paso 2
+              </button>
+              <button
+                type="button"
+                class="wizard-dot rounded-full border border-white/10 px-3 py-2 text-center text-[10px] uppercase tracking-[.22em] font-black text-white/45"
+                data-wizard-dot="3"
+                aria-current="false"
+              >
+                Paso 3
+              </button>
+            </div>
+            <div class="h-1.5 rounded-full bg-white/10 overflow-hidden">
+              <div
+                id="wizard-progress-bar"
+                class="h-full w-[33.333%] bg-white transition-all duration-500"
+              ></div>
+            </div>
+          </div>
+
+          <section class="wizard-step active" data-step="1">
+            <div class="grid md:grid-cols-2 gap-5">
+              <div>
+                <label for="fullName" class="block text-sm font-semibold mb-2"
+                  >Nombre completo *</label
+                >
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  required
+                  minlength="6"
+                  autocomplete="name"
+                  class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                  placeholder="Nombre y apellido"
+                />
+                <p id="error-fullName" class="hidden mt-2 text-xs text-red-300"></p>
+              </div>
+              <div>
+                <label for="phone" class="block text-sm font-semibold mb-2">Teléfono *</label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  minlength="10"
+                  maxlength="20"
+                  autocomplete="tel"
+                  inputmode="tel"
+                  class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                  placeholder="+52 55 1234 5678"
+                />
+                <p id="error-phone" class="hidden mt-2 text-xs text-red-300"></p>
+              </div>
+            </div>
+
+            <div class="mt-5">
+              <label for="email" class="block text-sm font-semibold mb-2">Correo *</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autocomplete="email"
+                class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                placeholder="tu@correo.com"
+              />
+              <p id="error-email" class="hidden mt-2 text-xs text-red-300"></p>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="2">
+            <div>
+              <label
+                id="evidence-label"
+                for="evidenceLinks"
+                class="block text-sm font-semibold mb-2"
+                >Portafolio y/o links a piezas/cuentas creadas por ti *</label
+              >
+              <textarea
+                id="evidenceLinks"
+                name="evidenceLinks"
+                required
+                minlength="10"
+                rows="4"
+                class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                placeholder="Links a portfolio, piezas, cuentas o casos"
+              ></textarea>
+              <p id="evidence-help" class="hidden mt-2 text-xs text-white/35"></p>
+              <p id="error-evidenceLinks" class="hidden mt-2 text-xs text-red-300"></p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5 mt-5">
+              <div>
+                <label id="ai-brief-label" for="aiBrief" class="block text-sm font-semibold mb-2"
+                  >Brief IA · opcional</label
+                >
+                <textarea
+                  id="aiBrief"
+                  name="aiBrief"
+                  rows="4"
+                  class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                  placeholder="Cómo usás IA"
+                ></textarea>
+                <p id="ai-brief-help" class="hidden mt-2 text-xs text-white/35"></p>
+                <p id="error-aiBrief" class="hidden mt-2 text-xs text-red-300"></p>
+              </div>
+              <div>
+                <label
+                  id="ai-projects-label"
+                  for="aiProjects"
+                  class="block text-sm font-semibold mb-2"
+                  >Proyectos IA · opcional</label
+                >
+                <textarea
+                  id="aiProjects"
+                  name="aiProjects"
+                  rows="4"
+                  class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                  placeholder="Links o casos con IA"
+                ></textarea>
+                <p id="ai-projects-help" class="hidden mt-2 text-xs text-white/35"></p>
+                <p id="error-aiProjects" class="hidden mt-2 text-xs text-red-300"></p>
+              </div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="3">
+            <div>
+              <label for="superpower" class="block text-sm font-semibold mb-2"
+                >Tu superpoder *</label
+              >
+              <textarea
+                id="superpower"
+                name="superpower"
+                required
+                minlength="20"
+                rows="3"
+                class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                placeholder="Eso que elevás en un equipo"
+              ></textarea>
+              <p id="error-superpower" class="hidden mt-2 text-xs text-red-300"></p>
+            </div>
+
+            <div class="mt-5">
+              <label
+                id="role-question-label"
+                for="roleQuestion"
+                class="block text-sm font-semibold mb-2"
+                >Caso del rol *</label
+              >
+              <textarea
+                id="roleQuestion"
+                name="roleQuestion"
+                required
+                minlength="40"
+                rows="5"
+                class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
+                placeholder="Contanos tu proceso"
+              ></textarea>
+              <p id="role-question-help" class="hidden mt-2 text-xs text-white/35"></p>
+              <p id="error-roleQuestion" class="hidden mt-2 text-xs text-red-300"></p>
+            </div>
+
+            <label class="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 p-4 mt-5">
+              <input
+                id="consent"
+                name="consent"
+                type="checkbox"
+                required
+                class="mt-1 h-4 w-4 rounded border-white/25 bg-transparent text-white focus:ring-white"
+              />
+              <span class="text-sm text-white/65 leading-relaxed">
+                Acepto que WeSpeak use mis datos únicamente para evaluar mi
+                postulación, contactarme y dar seguimiento al proceso de reclutamiento.
+                *
+              </span>
+            </label>
+            <p id="error-consent" class="hidden -mt-2 text-xs text-red-300"></p>
+          </section>
+
+          <div
+            id="form-status"
+            class="hidden rounded-[24px] border px-4 py-4 text-sm leading-relaxed"
+            role="status"
+            aria-live="polite"
+          ></div>
+
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-wrap gap-3">
+              <button
+                id="prev-step-button"
+                type="button"
+                class="hidden rounded-full border border-white/15 px-6 py-3 text-xs uppercase tracking-[.22em] font-black text-white/80 hover:bg-white hover:text-black transition"
+              >
+                Atrás
+              </button>
+              <button
+                id="next-step-button"
+                type="button"
+                class="rounded-full bg-white text-black px-7 py-4 text-xs uppercase tracking-[.22em] font-black shadow-white-glow transition hover:scale-105"
+              >
+                Siguiente
+              </button>
+              <button
+                id="submit-button"
+                type="submit"
+                class="hidden rounded-full bg-white text-black px-7 py-4 text-xs uppercase tracking-[.22em] font-black shadow-white-glow transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Enviar postulación a Contenido + IA
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-  </header>
 
-  <main id="top">
-    <section class="relative min-h-screen flex items-center justify-center noise-grid overflow-hidden px-6">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,.13),transparent_22%),linear-gradient(180deg,rgba(0,0,0,.1),#050505_88%)]"></div>
-      <div class="absolute top-[18%] left-1/2 -translate-x-1/2 w-[620px] h-[620px] rounded-full border border-white/10 animate-float"></div>
-      <div class="relative z-10 text-center max-w-5xl mx-auto pt-20">
-        <div class="inline-flex items-center gap-3 pill rounded-full px-5 py-2 mb-9 reveal"><span class="w-2 h-2 rounded-full bg-white shadow-white-glow"></span><span class="text-[10px] uppercase tracking-[.34em] font-bold text-white/70">Talent call · WeSpeak.mx</span></div>
-        <h1 class="font-black leading-[.86] tracking-[-.07em] text-[18vw] sm:text-[14vw] lg:text-[132px] reveal">
-          MAKE IT<br><span class="outline tracking-[.06em] pl-[.06em]">WORK</span>
-        </h1>
-        <p class="mt-8 text-white/60 text-base md:text-xl max-w-2xl mx-auto leading-relaxed reveal">Buscamos dos perfiles para amplificar la operación: alguien que produzca contenido con criterio e IA, y alguien que cuide agenda, pendientes y seguimiento personal ejecutivo.</p>
-        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 reveal">
-          <a href="#vacantes" class="rounded-full bg-white text-black px-8 py-4 text-xs uppercase tracking-[.22em] font-black shadow-white-glow hover:scale-105 transition">Ver vacantes</a>
-          <a href="#manifiesto" class="rounded-full border border-white/15 px-8 py-4 text-xs uppercase tracking-[.22em] font-black text-white/80 hover:bg-white hover:text-black transition">El estándar</a>
-        </div>
-      </div>
-    </section>
+    <script>
+      const topbar = document.getElementById("topbar");
+      window.addEventListener("scroll", () => {
+        topbar.className =
+          window.scrollY > 20
+            ? "fixed top-0 left-0 right-0 z-40 py-3 transition-all duration-500 bg-black/70 backdrop-blur-xl border-b border-white/10"
+            : "fixed top-0 left-0 right-0 z-40 py-5 transition-all duration-500";
+      });
 
-    <section id="manifiesto" class="relative py-32 md:py-44 px-6 overflow-hidden">
-      <div class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_15%_40%,rgba(255,255,255,.08),transparent_24%)]"></div>
-      <div class="max-w-6xl mx-auto relative z-10">
-        <div class="text-[10px] uppercase tracking-[.45em] text-white/45 font-bold mb-10 reveal">Prelude</div>
-        <p class="text-3xl md:text-6xl leading-tight font-black tracking-[-.05em] max-w-5xl reveal">WeSpeak no necesita gente que solo “ayude”. Necesita personas que conviertan ruido en señal: <span class="text-white/45">ideas claras, ejecución rápida, documentación y criterio.</span></p>
-      </div>
-    </section>
+      const obs = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("visible");
+          }),
+        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
 
-    <section class="relative py-24 overflow-hidden border-y border-white/5">
-      <div class="absolute inset-0 flex items-center opacity-[.07] pointer-events-none"><div class="flex whitespace-nowrap animate-marquee"><span class="text-[120px] md:text-[190px] font-black outline-soft mx-8">NOISE · SIGNAL · FANDOM · AUTHORITY · </span><span class="text-[120px] md:text-[190px] font-black outline-soft mx-8">NOISE · SIGNAL · FANDOM · AUTHORITY · </span></div></div>
-      <div class="relative z-10 max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-5">
-        <div class="glass rounded-[32px] p-8 reveal"><div class="text-6xl font-black text-white/10 mb-8">01</div><h2 class="text-2xl font-black mb-4">No vanity work.</h2><p class="text-white/50 leading-relaxed text-sm">El trabajo debe mover algo: claridad, autoridad, contenido, seguimiento o velocidad.</p></div>
-        <div class="glass rounded-[32px] p-8 reveal"><div class="text-6xl font-black text-white/10 mb-8">02</div><h2 class="text-2xl font-black mb-4">IA con intención.</h2><p class="text-white/50 leading-relaxed text-sm">No buscamos “uso ChatGPT”. Buscamos flujos concretos que eleven calidad y reduzcan fricción.</p></div>
-        <div class="glass rounded-[32px] p-8 reveal"><div class="text-6xl font-black text-white/10 mb-8">03</div><h2 class="text-2xl font-black mb-4">Cierre de ciclos.</h2><p class="text-white/50 leading-relaxed text-sm">Cada pendiente debe tener salida: hecho, bloqueado, delegado, calendarizado o descartado.</p></div>
-      </div>
-    </section>
+      const ROLE_COPY = {
+        content: {
+          label: "Contenido + IA",
+          summary: "Portfolio, piezas y criterio creativo.",
+          evidenceLabel: "Portafolio y/o links a piezas/cuentas creadas por ti *",
+          evidencePlaceholder: "Links a portfolio, reels, cuentas o piezas",
+          evidenceHelp: "Si podés, priorizá video.",
+          aiBriefLabel: "Brief IA · opcional",
+          aiBriefPlaceholder: "Cómo usás IA en tu proceso",
+          aiBriefHelp: "",
+          aiProjectsLabel: "Proyectos IA · opcional",
+          aiProjectsPlaceholder: "Links o casos con IA",
+          aiProjectsHelp: "",
+          roleQuestionLabel: "Caso creativo *",
+          roleQuestionPlaceholder:
+            "Contanos una pieza o proyecto: objetivo, proceso, herramientas y aprendizaje.",
+          roleQuestionHelp: "",
+          submitLabel: "Enviar postulación a Contenido + IA",
+        },
+        assistant: {
+          label: "Asistente ejecutivo",
+          summary: "Orden, seguimiento y claridad operativa.",
+          evidenceLabel:
+            "Links a documentos, minutas, tableros o evidencias de organización *",
+          evidencePlaceholder: "Links o casos de sistemas, SOPs, minutas o tableros",
+          evidenceHelp: "Puede ser link público o caso bien explicado.",
+          aiBriefLabel: "IA en tu operación · opcional",
+          aiBriefPlaceholder: "Cómo usás IA en seguimiento o documentación",
+          aiBriefHelp: "",
+          aiProjectsLabel: "Casos/proyectos IA · opcional",
+          aiProjectsPlaceholder: "Links o casos operativos con IA",
+          aiProjectsHelp: "",
+          roleQuestionLabel: "Caso operativo *",
+          roleQuestionPlaceholder:
+            "¿Cómo ordenarías una semana con juntas, pendientes, facturas y urgencias?",
+          roleQuestionHelp: "",
+          submitLabel: "Enviar postulación a Asistente ejecutivo",
+        },
+      };
 
-    <section id="vacantes" class="relative py-32 px-6 overflow-hidden">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center max-w-4xl mx-auto mb-16 reveal">
-          <div class="text-[10px] uppercase tracking-[.45em] text-white/45 font-bold mb-6">Elige tu camino</div>
-          <h2 class="text-5xl md:text-8xl font-black tracking-[-.07em] leading-[.9]">DOS ROLES.<br><span class="outline">MISMA BARRA.</span></h2>
-          <p class="text-white/50 mt-7 leading-relaxed">Selecciona una vacante para ver exactamente qué se espera, qué evidencia mandar y cómo aplicar.</p>
-        </div>
+      const cards = document.querySelectorAll(".role-card");
+      const applyButtons = document.querySelectorAll(".apply");
+      const modalTriggers = document.querySelectorAll("[data-modal-role]");
+      const formRoleButtons = document.querySelectorAll("[data-form-role]");
+      const applicationModal = document.getElementById("application-modal");
+      const modalCloseButtons = document.querySelectorAll(
+        "[data-close-application-modal]",
+      );
+      const panels = {
+        content: document.getElementById("panel-content"),
+        assistant: document.getElementById("panel-assistant"),
+      };
+      const form = document.getElementById("application-form");
+      const formStatus = document.getElementById("form-status");
+      const prevStepButton = document.getElementById("prev-step-button");
+      const nextStepButton = document.getElementById("next-step-button");
+      const submitButton = document.getElementById("submit-button");
+      const wizardSteps = Array.from(document.querySelectorAll(".wizard-step"));
+      const wizardDots = Array.from(document.querySelectorAll("[data-wizard-dot]"));
+      const wizardStepTitle = document.getElementById("wizard-step-title");
+      const wizardStepCaption = document.getElementById("wizard-step-caption");
+      const wizardProgressBar = document.getElementById("wizard-progress-bar");
+      const roleField = document.getElementById("role-field");
+      const startedAtField = document.getElementById("started-at");
+      const pageUrlField = document.getElementById("page-url");
+      const userAgentField = document.getElementById("user-agent");
+      const evidenceLabel = document.getElementById("evidence-label");
+      const evidenceLinks = document.getElementById("evidenceLinks");
+      const evidenceHelp = document.getElementById("evidence-help");
+      const aiBriefLabel = document.getElementById("ai-brief-label");
+      const aiBrief = document.getElementById("aiBrief");
+      const aiBriefHelp = document.getElementById("ai-brief-help");
+      const aiProjectsLabel = document.getElementById("ai-projects-label");
+      const aiProjects = document.getElementById("aiProjects");
+      const aiProjectsHelp = document.getElementById("ai-projects-help");
+      const roleQuestionLabel = document.getElementById("role-question-label");
+      const roleQuestion = document.getElementById("roleQuestion");
+      const roleQuestionHelp = document.getElementById("role-question-help");
 
-        <div class="grid lg:grid-cols-2 gap-5 mb-10" role="tablist" aria-label="Vacantes WeSpeak">
-          <button type="button" data-role="content" aria-selected="true" class="role-card reveal text-left rounded-[36px] glass card-border p-8 md:p-10 transition duration-500" role="tab">
-            <div class="flex justify-between items-start mb-16"><span class="invert-pill pill rounded-full px-4 py-2 text-[10px] uppercase tracking-[.25em] font-black">Vacante 01</span><span class="text-8xl font-black text-white/10 muted-on-select">01</span></div>
-            <h3 class="text-3xl md:text-5xl font-black tracking-[-.05em] leading-none mb-5">Creador/a de Contenido con IA</h3>
-            <p class="muted-on-select text-white/50 leading-relaxed">Planea, pelotea, graba, edita y construye flujos donde la IA complemente producción, investigación y creatividad.</p>
-          </button>
-          <button type="button" data-role="assistant" aria-selected="false" class="role-card reveal text-left rounded-[36px] glass card-border p-8 md:p-10 transition duration-500" role="tab">
-            <div class="flex justify-between items-start mb-16"><span class="invert-pill pill rounded-full px-4 py-2 text-[10px] uppercase tracking-[.25em] font-black">Vacante 02</span><span class="text-8xl font-black text-white/10 muted-on-select">02</span></div>
-            <h3 class="text-3xl md:text-5xl font-black tracking-[-.05em] leading-none mb-5">Asistente Personal Ejecutivo</h3>
-            <p class="muted-on-select text-white/50 leading-relaxed">Ordena agenda, pendientes, correos, documentos, minutas y temas personales con discreción, criterio y seguimiento.</p>
-          </button>
-        </div>
+      const fieldRefs = {
+        fullName: document.getElementById("fullName"),
+        phone: document.getElementById("phone"),
+        email: document.getElementById("email"),
+        evidenceLinks,
+        aiBrief,
+        aiProjects,
+        superpower: document.getElementById("superpower"),
+        roleQuestion,
+        consent: document.getElementById("consent"),
+      };
 
-        <article id="panel-content" class="panel active glass rounded-[40px] p-6 md:p-10 reveal">
-          <div class="grid lg:grid-cols-12 gap-10">
-            <div class="lg:col-span-5"><div class="pill rounded-full inline-flex px-4 py-2 text-[10px] uppercase tracking-[.28em] font-black text-white/60 mb-6">Signal maker</div><h3 class="text-4xl md:text-6xl font-black tracking-[-.06em] leading-none mb-6">Que la idea no se quede en junta.</h3><p class="text-white/55 leading-relaxed mb-8">Este perfil traduce estrategia en contenido real. Tiene criterio creativo, sabe producir con recursos disponibles y usa IA para acelerar investigación, guion, edición, versiones y aprendizaje.</p><a href="#postular" data-target="content" class="apply rounded-full bg-white text-black px-7 py-4 inline-flex text-xs uppercase tracking-[.22em] font-black shadow-white-glow">Postular a contenido</a></div>
-            <div class="lg:col-span-7 grid md:grid-cols-2 gap-5">
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">Responsabilidades</h4><ul class="text-white/50 text-sm leading-relaxed space-y-3"><li>• Pelotear ideas y convertirlas en conceptos claros.</li><li>• Crear guiones, shotlists y calendarios de producción.</li><li>• Grabar con criterio visual, audio e iluminación básica.</li><li>• Editar video corto/largo, subtítulos, ritmo y versiones.</li><li>• Ordenar assets, aprendizajes y entregables.</li></ul></div>
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">IA aplicada</h4><ul class="text-white/50 text-sm leading-relaxed space-y-3"><li>• Investigación, insights y referencias visuales.</li><li>• Prompts para guion, hooks, captions y variaciones.</li><li>• Transcripción, síntesis, cortes y reciclaje de formatos.</li><li>• Herramientas generativas para apoyar, no sustituir criterio.</li><li>• Documentación del flujo y resultados.</li></ul></div>
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">Herramientas</h4><p class="text-white/50 text-sm leading-relaxed">Premiere, DaVinci, CapCut, After Effects básico, Canva/Figma, Drive/Notion, ChatGPT/Claude/Gemini, Runway, Descript, OpusClip, Firefly/Midjourney o equivalentes.</p></div>
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">Manda evidencia</h4><p class="text-white/50 text-sm leading-relaxed">CV, reel/portfolio, 3 piezas producidas y una nota breve explicando un flujo de IA que ya uses para crear mejor o más rápido.</p></div>
-            </div>
-          </div>
-        </article>
+      const WIZARD_META = {
+        1: {
+          title: "Paso 1",
+          caption: "1 / 3",
+          fields: ["fullName", "phone", "email"],
+        },
+        2: {
+          title: "Paso 2",
+          caption: "2 / 3",
+          fields: ["evidenceLinks", "aiBrief", "aiProjects"],
+        },
+        3: {
+          title: "Paso 3",
+          caption: "3 / 3",
+          fields: ["superpower", "roleQuestion", "consent"],
+        },
+      };
+      let currentStep = 1;
+      let lastFocusedTrigger = null;
 
-        <article id="panel-assistant" class="panel glass rounded-[40px] p-6 md:p-10 reveal">
-          <div class="grid lg:grid-cols-12 gap-10">
-            <div class="lg:col-span-5"><div class="pill rounded-full inline-flex px-4 py-2 text-[10px] uppercase tracking-[.28em] font-black text-white/60 mb-6">Operating system</div><h3 class="text-4xl md:text-6xl font-black tracking-[-.06em] leading-none mb-6">Que nada importante se quede flotando.</h3><p class="text-white/55 leading-relaxed mb-8">Este perfil protege foco, tiempo, información y seguimiento. Necesita discreción, estructura, buen juicio y capacidad para convertir caos operativo en decisiones claras.</p><a href="#postular" data-target="assistant" class="apply rounded-full bg-white text-black px-7 py-4 inline-flex text-xs uppercase tracking-[.22em] font-black shadow-white-glow">Postular a asistente</a></div>
-            <div class="lg:col-span-7 grid md:grid-cols-2 gap-5">
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">Responsabilidades</h4><ul class="text-white/50 text-sm leading-relaxed space-y-3"><li>• Manejar agenda, bloques, recordatorios y prioridades.</li><li>• Dar seguimiento a correos, mensajes y acuerdos.</li><li>• Ordenar documentos, facturas, tickets y comprobantes.</li><li>• Preparar contexto antes de juntas y minutas después.</li><li>• Coordinar temas personales/profesionales con discreción.</li></ul></div>
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">Perfil clave</h4><ul class="text-white/50 text-sm leading-relaxed space-y-3"><li>• Confidencialidad absoluta.</li><li>• Comunicación breve, humana y accionable.</li><li>• Criterio para distinguir urgencia, importancia y ruido.</li><li>• Seguimiento obsesivo sin volverse invasivo.</li><li>• Reporta bloqueos con propuesta de salida.</li></ul></div>
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">Herramientas</h4><p class="text-white/50 text-sm leading-relaxed">Google Calendar, Gmail, Drive, Docs/Sheets, WhatsApp/Telegram, Notion, Asana/ClickUp y herramientas de IA para resumir, redactar, clasificar e investigar.</p></div>
-              <div class="rounded-[28px] bg-black/40 border border-white/10 p-7"><h4 class="font-black text-xl mb-4">Manda evidencia</h4><p class="text-white/50 text-sm leading-relaxed">CV y una nota breve: cómo ordenarías una semana con juntas, pendientes personales, facturas, correos urgentes y prioridades compitiendo.</p></div>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
+      startedAtField.value = String(Date.now());
+      pageUrlField.value = window.location.href;
+      userAgentField.value = navigator.userAgent;
 
-    <section id="proceso" class="relative py-32 px-6 bg-black border-y border-white/5">
-      <div class="max-w-6xl mx-auto text-center mb-14 reveal"><div class="text-[10px] uppercase tracking-[.45em] text-white/45 font-bold mb-6">Proceso</div><h2 class="text-5xl md:text-7xl font-black tracking-[-.06em] leading-none">NO CV VACÍO.<br><span class="outline">EVIDENCIA.</span></h2></div>
-      <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-5">
-        <div class="glass rounded-[30px] p-7 reveal"><span class="text-5xl font-black text-white/10">01</span><h3 class="font-black text-xl mt-8 mb-3">Aplica</h3><p class="text-white/45 text-sm leading-relaxed">Envía CV y evidencia según la vacante elegida.</p></div>
-        <div class="glass rounded-[30px] p-7 reveal"><span class="text-5xl font-black text-white/10">02</span><h3 class="font-black text-xl mt-8 mb-3">Filtro</h3><p class="text-white/45 text-sm leading-relaxed">Revisamos criterio, ejecución, herramientas y fit cultural.</p></div>
-        <div class="glass rounded-[30px] p-7 reveal"><span class="text-5xl font-black text-white/10">03</span><h3 class="font-black text-xl mt-8 mb-3">Entrevista</h3><p class="text-white/45 text-sm leading-relaxed">Hablamos de casos reales, proceso, orden y toma de decisiones.</p></div>
-        <div class="glass rounded-[30px] p-7 reveal"><span class="text-5xl font-black text-white/10">04</span><h3 class="font-black text-xl mt-8 mb-3">Prueba</h3><p class="text-white/45 text-sm leading-relaxed">Ejercicio breve para ver cómo piensas y entregas.</p></div>
-      </div>
-    </section>
+      function setStatus(type, message) {
+        const styles = {
+          success: "border-emerald-400/40 bg-emerald-500/10 text-emerald-100",
+          error: "border-red-400/40 bg-red-500/10 text-red-100",
+          info: "border-white/20 bg-white/5 text-white/75",
+        };
+        formStatus.className = `rounded-[24px] border px-4 py-4 text-sm leading-relaxed ${styles[type] || styles.info}`;
+        formStatus.textContent = message;
+        formStatus.classList.remove("hidden");
+      }
 
-    <section id="postular" class="relative min-h-[80vh] flex items-center px-6 py-32 overflow-hidden">
-      <div class="absolute inset-0 opacity-20"><div class="absolute left-[-10%] top-1/3 w-[500px] h-[500px] bg-white/10 blur-[150px] rounded-full"></div></div>
-      <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-[22vw] font-black outline-soft opacity-40 leading-none whitespace-nowrap pointer-events-none">WESPEAK WE</div>
-      <div class="max-w-6xl mx-auto relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-        <div class="reveal"><h2 class="text-6xl md:text-8xl font-black tracking-[-.07em] leading-[.85]">SHARE YOUR<br><span class="outline">WORK.</span></h2><p class="text-white/55 mt-7 max-w-md leading-relaxed">Si creés que puedes elevar la operación de WeSpeak, manda evidencia. Sin scripts aburridos. Sin humo.</p></div>
-        <div class="glass rounded-[36px] p-8 reveal">
-          <div class="text-[10px] uppercase tracking-[.35em] text-white/45 font-black mb-6">Aplicar por correo</div>
-          <div class="grid gap-4">
-            <a id="mail-content" href="mailto:talento@wespeak.mx?subject=Postulaci%C3%B3n%20%C2%B7%20Creador%2Fa%20de%20Contenido%20con%20IA&body=Hola%20WeSpeak%2C%0A%0AQuiero%20postularme%20a%20la%20vacante%20de%20Creador%2Fa%20de%20Contenido%20con%20IA.%0A%0AAdjunto%20mi%20CV%2C%20portfolio%2Freel%2C%203%20piezas%20producidas%20y%20una%20nota%20breve%20sobre%20un%20flujo%20de%20IA%20que%20uso.%0A%0AGracias." class="rounded-full bg-white text-black px-7 py-5 text-xs uppercase tracking-[.2em] font-black text-center shadow-white-glow">Contenido + IA</a>
-            <a id="mail-assistant" href="mailto:talento@wespeak.mx?subject=Postulaci%C3%B3n%20%C2%B7%20Asistente%20Personal%20Ejecutivo&body=Hola%20WeSpeak%2C%0A%0AQuiero%20postularme%20a%20la%20vacante%20de%20Asistente%20Personal%20Ejecutivo.%0A%0AAdjunto%20mi%20CV%20y%20una%20nota%20breve%20sobre%20c%C3%B3mo%20organizar%C3%ADa%20una%20semana%20con%20juntas%2C%20pendientes%2C%20facturas%20y%20correos%20urgentes.%0A%0AGracias." class="rounded-full border border-white/15 px-7 py-5 text-xs uppercase tracking-[.2em] font-black text-center hover:bg-white hover:text-black transition">Asistente personal</a>
-          </div>
-          <p class="text-white/35 text-xs leading-relaxed mt-6">Placeholder de recepción: talento@wespeak.mx. Se puede cambiar por el correo final antes de publicar.</p>
-        </div>
-      </div>
-    </section>
-  </main>
+      function clearStatus() {
+        formStatus.textContent = "";
+        formStatus.classList.add("hidden");
+      }
 
-  <script>
-    const topbar=document.getElementById('topbar');
-    window.addEventListener('scroll',()=>{topbar.className=window.scrollY>20?'fixed top-0 left-0 right-0 z-40 py-3 transition-all duration-500 bg-black/70 backdrop-blur-xl border-b border-white/10':'fixed top-0 left-0 right-0 z-40 py-5 transition-all duration-500'});
-    const obs=new IntersectionObserver((entries)=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12,rootMargin:'0px 0px -8% 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-    const cards=document.querySelectorAll('.role-card'); const panels={content:document.getElementById('panel-content'),assistant:document.getElementById('panel-assistant')};
-    function selectRole(role){cards.forEach(c=>c.setAttribute('aria-selected',c.dataset.role===role?'true':'false'));Object.entries(panels).forEach(([k,p])=>p.classList.toggle('active',k===role));panels[role]?.scrollIntoView({behavior:'smooth',block:'nearest'});}
-    cards.forEach(c=>c.addEventListener('click',()=>selectRole(c.dataset.role)));
-    document.querySelectorAll('.apply').forEach(a=>a.addEventListener('click',()=>{const id=a.dataset.target==='assistant'?'mail-assistant':'mail-content';setTimeout(()=>document.getElementById(id)?.focus(),350)}));
-  </script>
-</body>
+      function setFieldError(name, message) {
+        const field = fieldRefs[name];
+        const error = document.getElementById(`error-${name}`);
+        if (!field || !error) return;
+        field.classList.add("field-invalid");
+        field.classList.remove("field-valid");
+        error.textContent = message;
+        error.classList.remove("hidden");
+      }
+
+      function clearFieldError(name) {
+        const field = fieldRefs[name];
+        const error = document.getElementById(`error-${name}`);
+        if (!field || !error) return;
+        field.classList.remove("field-invalid");
+        field.classList.remove("field-valid");
+        error.textContent = "";
+        error.classList.add("hidden");
+      }
+
+      function clearAllErrors() {
+        Object.keys(fieldRefs).forEach(clearFieldError);
+      }
+
+      function setOptionalText(element, value) {
+        if (!element) return;
+        element.textContent = value || "";
+        element.classList.toggle("hidden", !value);
+      }
+
+      function normalizeName(value) {
+        return String(value || "")
+          .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’. -]/g, "")
+          .replace(/\s+/g, " ")
+          .trimStart();
+      }
+
+      function normalizeEmail(value) {
+        return String(value || "").replace(/\s+/g, "").toLowerCase();
+      }
+
+      function isValidName(value) {
+        return (
+          value.length >= 6 &&
+          /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’. -]+$/.test(value) &&
+          /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(value)
+        );
+      }
+
+      function isValidPhone(value) {
+        const digits = value.replace(/\D/g, "");
+        return /^[-+()\d\s]{10,20}$/.test(value) && digits.length >= 10 && digits.length <= 15;
+      }
+
+      function isValidEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      }
+
+      function startsWithNumber(value) {
+        return /^\d/.test(String(value || "").trim());
+      }
+
+      function removeLeadingNumberPrefix(value) {
+        const normalized = String(value || "");
+        if (!startsWithNumber(normalized)) return normalized;
+        return normalized.replace(/^\s*\d+\s*/, "");
+      }
+
+      function shouldMarkFieldValid(name, value) {
+        const trimmedValue = fieldRefs[name]?.type === "checkbox" ? value : String(value).trim();
+
+        if (!trimmedValue) return false;
+
+        switch (name) {
+          case "fullName":
+            return isValidName(trimmedValue);
+          case "phone":
+            return isValidPhone(trimmedValue);
+          case "email":
+            return isValidEmail(trimmedValue);
+          case "evidenceLinks":
+            return trimmedValue.length >= 10 && !startsWithNumber(trimmedValue);
+          case "aiBrief":
+            return trimmedValue.length >= 20 && !startsWithNumber(trimmedValue);
+          case "aiProjects":
+            return trimmedValue.length >= 10 && !startsWithNumber(trimmedValue);
+          default:
+            return true;
+        }
+      }
+
+      function setCurrentStep(step, { focusFirstField = false } = {}) {
+        const totalSteps = wizardSteps.length;
+        currentStep = Math.min(Math.max(step, 1), totalSteps);
+        const stepMeta = WIZARD_META[currentStep];
+
+        wizardSteps.forEach((section, index) => {
+          section.classList.toggle("active", index + 1 === currentStep);
+        });
+        wizardDots.forEach((dot, index) => {
+          const isCurrent = index + 1 === currentStep;
+          dot.setAttribute("aria-current", isCurrent ? "step" : "false");
+          dot.classList.toggle("text-white/45", !isCurrent);
+        });
+
+        wizardStepTitle.textContent = stepMeta.title;
+        wizardStepCaption.textContent = stepMeta.caption;
+        wizardProgressBar.style.width = `${(currentStep / totalSteps) * 100}%`;
+        prevStepButton.classList.toggle("hidden", currentStep === 1);
+        nextStepButton.classList.toggle("hidden", currentStep === totalSteps);
+        submitButton.classList.toggle("hidden", currentStep !== totalSteps);
+
+        if (focusFirstField) {
+          const firstField = fieldRefs[stepMeta.fields[0]];
+          firstField?.focus();
+        }
+      }
+
+      function openApplicationModal(role = roleField.value || "content", trigger = null) {
+        if (trigger) lastFocusedTrigger = trigger;
+        startedAtField.value = String(Date.now());
+        pageUrlField.value = window.location.href;
+        userAgentField.value = navigator.userAgent;
+        syncRole(role);
+        clearStatus();
+        applicationModal.classList.add("open");
+        applicationModal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-open");
+        setCurrentStep(1);
+        setTimeout(() => fieldRefs.fullName?.focus(), 120);
+      }
+
+      function closeApplicationModal() {
+        applicationModal.classList.remove("open");
+        applicationModal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-open");
+        clearStatus();
+        lastFocusedTrigger?.focus?.();
+      }
+
+      function syncRole(role, { scrollPanel = false } = {}) {
+        const safeRole = ROLE_COPY[role] ? role : "content";
+        const copy = ROLE_COPY[safeRole];
+
+        cards.forEach((card) =>
+          card.setAttribute("aria-selected", card.dataset.role === safeRole ? "true" : "false"),
+        );
+        Object.entries(panels).forEach(([key, panel]) =>
+          panel.classList.toggle("active", key === safeRole),
+        );
+        formRoleButtons.forEach((button) =>
+          button.setAttribute("aria-pressed", button.dataset.formRole === safeRole ? "true" : "false"),
+        );
+
+        roleField.value = safeRole;
+        evidenceLabel.textContent = copy.evidenceLabel;
+        evidenceLinks.placeholder = copy.evidencePlaceholder;
+        setOptionalText(evidenceHelp, copy.evidenceHelp);
+        aiBriefLabel.textContent = copy.aiBriefLabel;
+        aiBrief.placeholder = copy.aiBriefPlaceholder;
+        setOptionalText(aiBriefHelp, copy.aiBriefHelp);
+        aiProjectsLabel.textContent = copy.aiProjectsLabel;
+        aiProjects.placeholder = copy.aiProjectsPlaceholder;
+        setOptionalText(aiProjectsHelp, copy.aiProjectsHelp);
+        roleQuestionLabel.textContent = copy.roleQuestionLabel;
+        roleQuestion.placeholder = copy.roleQuestionPlaceholder;
+        setOptionalText(roleQuestionHelp, copy.roleQuestionHelp);
+        submitButton.textContent = copy.submitLabel;
+
+        if (scrollPanel) {
+          panels[safeRole]?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
+
+      function getValidationErrors() {
+        const errors = {};
+        const role = roleField.value;
+        const fullName = normalizeName(fieldRefs.fullName.value);
+        const phone = normalizePhone(fieldRefs.phone.value);
+        const email = normalizeEmail(fieldRefs.email.value);
+        const evidence = evidenceLinks.value.trim();
+        const superpower = fieldRefs.superpower.value.trim();
+        const question = roleQuestion.value.trim();
+        const aiBriefValue = aiBrief.value.trim();
+        const aiProjectsValue = aiProjects.value.trim();
+        const consent = fieldRefs.consent.checked;
+        const startedAt = Number(startedAtField.value || 0);
+        const elapsed = Date.now() - startedAt;
+
+        if (fullName.length < 6) {
+          errors.fullName = "Escribe tu nombre completo.";
+        } else if (!isValidName(fullName)) {
+          errors.fullName = "El nombre no puede llevar números ni caracteres raros.";
+        }
+        if (!isValidPhone(phone)) {
+          errors.phone = "El teléfono debe tener entre 10 y 15 dígitos y no puede llevar letras.";
+        }
+        if (!isValidEmail(email)) {
+          errors.email = "Escribe un correo válido, por ejemplo nombre@dominio.com.";
+        }
+        if (evidence.length < 10) {
+          errors.evidenceLinks = "Comparte evidencia real: links o una descripción útil, no lo dejes vacío.";
+        } else if (startsWithNumber(evidence)) {
+          errors.evidenceLinks = "Este campo no puede empezar con un número.";
+        }
+        if (aiBriefValue.length > 0 && startsWithNumber(aiBriefValue)) {
+          errors.aiBrief = "Este campo no puede empezar con un número.";
+        } else if (aiBriefValue.length > 0 && aiBriefValue.length < 20) {
+          errors.aiBrief = "Si vas a contar cómo usás IA, danos un poco más de contexto.";
+        }
+        if (aiProjectsValue.length > 0 && startsWithNumber(aiProjectsValue)) {
+          errors.aiProjects = "Este campo no puede empezar con un número.";
+        } else if (aiProjectsValue.length > 0 && aiProjectsValue.length < 10) {
+          errors.aiProjects = "Ese campo puede ir vacío, pero si lo llenas que aporte algo concreto.";
+        }
+        if (superpower.length < 20) {
+          errors.superpower = "Describe tu superpoder con algo más de sustancia.";
+        }
+        if (question.length < 40) {
+          errors.roleQuestion =
+            role === "assistant"
+              ? "Necesitamos ver tu sistema de priorización y seguimiento con más detalle."
+              : "Necesitamos ver el caso creativo con objetivo, proceso y criterio.";
+        }
+        if (!consent) {
+          errors.consent = "Necesitas aceptar el uso de datos para poder enviar la postulación.";
+        }
+        if (elapsed < 4000) {
+          errors.__form = "El formulario se envió demasiado rápido. Tómate unos segundos para revisar tu información e inténtalo de nuevo.";
+        }
+
+        fieldRefs.fullName.value = fullName;
+        fieldRefs.phone.value = phone;
+        fieldRefs.email.value = email;
+        return errors;
+      }
+
+      function validateFields(fieldNames, { showStatus = true } = {}) {
+        clearAllErrors();
+        clearStatus();
+
+        const errors = getValidationErrors();
+
+        if (errors.__form) {
+          if (showStatus) setStatus("error", errors.__form);
+          return false;
+        }
+
+        const visibleErrors = fieldNames.filter((name) => errors[name]);
+        visibleErrors.forEach((name) => setFieldError(name, errors[name]));
+
+        if (visibleErrors.length > 0) {
+          if (showStatus) {
+            setStatus("error", "Hay campos que necesitan corrección antes de enviar.");
+          }
+          fieldRefs[visibleErrors[0]]?.focus();
+          return false;
+        }
+
+        return true;
+      }
+
+      cards.forEach((card) =>
+        card.addEventListener("click", () => syncRole(card.dataset.role, { scrollPanel: true })),
+      );
+
+      applyButtons.forEach((button) =>
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          openApplicationModal(button.dataset.target, button);
+        }),
+      );
+
+      formRoleButtons.forEach((button) =>
+        button.addEventListener("click", () => {
+          syncRole(button.dataset.formRole);
+          setCurrentStep(1);
+          clearStatus();
+        }),
+      );
+
+      modalTriggers.forEach((trigger) =>
+        trigger.addEventListener("click", (event) => {
+          event.preventDefault();
+          openApplicationModal(trigger.dataset.modalRole, trigger);
+        }),
+      );
+
+      modalCloseButtons.forEach((button) =>
+        button.addEventListener("click", () => closeApplicationModal()),
+      );
+
+      applicationModal.addEventListener("click", (event) => {
+        if (event.target === applicationModal) closeApplicationModal();
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && applicationModal.classList.contains("open")) {
+          closeApplicationModal();
+        }
+      });
+
+      wizardDots.forEach((dot, index) =>
+        dot.addEventListener("click", () => {
+          const targetStep = index + 1;
+
+          if (targetStep === currentStep) return;
+          clearAllErrors();
+          clearStatus();
+          setCurrentStep(targetStep, { focusFirstField: true });
+        }),
+      );
+
+      function normalizePhone(value) {
+        return value.replace(/[^\d+()\-\s]/g, "").trim();
+      }
+
+      function goToNextStep() {
+        clearAllErrors();
+        clearStatus();
+        setCurrentStep(currentStep + 1, { focusFirstField: true });
+      }
+
+      prevStepButton.addEventListener("click", () => {
+        clearStatus();
+        setCurrentStep(currentStep - 1, { focusFirstField: true });
+      });
+
+      nextStepButton.addEventListener("click", () => {
+        goToNextStep();
+      });
+
+      form.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Enter" &&
+          event.target.tagName !== "TEXTAREA" &&
+          currentStep < wizardSteps.length
+        ) {
+          event.preventDefault();
+          goToNextStep();
+        }
+      });
+
+      Object.entries(fieldRefs).forEach(([name, field]) => {
+        const eventName = field.type === "checkbox" ? "change" : "input";
+        field.addEventListener(eventName, () => {
+          if (name === "fullName") {
+            field.value = normalizeName(field.value);
+          }
+          if (name === "phone") {
+            field.value = normalizePhone(field.value);
+          }
+          if (name === "email") {
+            field.value = normalizeEmail(field.value);
+          }
+          if (["evidenceLinks", "aiBrief", "aiProjects"].includes(name)) {
+            field.value = removeLeadingNumberPrefix(field.value);
+          }
+
+          clearFieldError(name);
+          if (field.type !== "checkbox" && shouldMarkFieldValid(name, field.value)) {
+            field.classList.add("field-valid");
+          } else if (field.type !== "checkbox") {
+            field.classList.remove("field-valid");
+          }
+          if (field.type === "checkbox" && field.checked) {
+            clearFieldError(name);
+          }
+          if (!formStatus.classList.contains("hidden")) clearStatus();
+        });
+      });
+
+      async function submitApplication(payload) {
+        const endpoint = form.dataset.endpoint;
+        if (!endpoint || endpoint.includes("__GOOGLE_APPS_SCRIPT_WEB_APP_URL__")) {
+          throw new Error(
+            "Falta configurar el endpoint de Google Apps Script en el atributo data-endpoint del formulario.",
+          );
+        }
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
+        try {
+          const body = new URLSearchParams(payload);
+          const response = await fetch(endpoint, {
+            method: "POST",
+            body,
+            redirect: "follow",
+            signal: controller.signal,
+          });
+
+          const raw = await response.text();
+          let data;
+          try {
+            data = JSON.parse(raw);
+          } catch (_error) {
+            throw new Error("La respuesta del endpoint no regresó JSON válido.");
+          }
+
+          if (!response.ok && data.status !== "success") {
+            throw new Error(data.message || "La integración rechazó la solicitud.");
+          }
+
+          return data;
+        } finally {
+          clearTimeout(timeout);
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const allFields = Object.values(WIZARD_META).flatMap((step) => step.fields);
+        if (!validateFields(allFields, { showStatus: true })) return;
+
+        const role = roleField.value;
+        const email = fieldRefs.email.value.trim().toLowerCase();
+        const duplicateKey = `wespeak-postulation:${role}:${email}`;
+        const recentLocalSubmission = Number(localStorage.getItem(duplicateKey) || 0);
+        const duplicateWindowMs = 24 * 60 * 60 * 1000;
+
+        if (recentLocalSubmission && Date.now() - recentLocalSubmission < duplicateWindowMs) {
+          setStatus(
+            "info",
+            "Parece que ya enviaste una postulación reciente desde este dispositivo para este rol. Si necesitas actualizar algo, contacta al equipo.",
+          );
+          return;
+        }
+
+        if (recentLocalSubmission && Date.now() - recentLocalSubmission >= duplicateWindowMs) {
+          localStorage.removeItem(duplicateKey);
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Enviando...";
+        setStatus("info", "Estamos enviando tu postulación. No cierres esta pantalla.");
+
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+        payload.consent = fieldRefs.consent.checked ? "true" : "false";
+
+        try {
+          const result = await submitApplication(payload);
+
+          if (result.status === "duplicate") {
+            setStatus(
+              "info",
+              result.message || "Ya existía una postulación para este correo y rol.",
+            );
+            return;
+          }
+
+          if (result.status === "spam") {
+            setStatus(
+              "error",
+              result.message || "No pudimos procesar esta postulación por una validación anti-spam.",
+            );
+            return;
+          }
+
+          if (result.status !== "success") {
+            throw new Error(result.message || "No pudimos guardar tu postulación.");
+          }
+
+          localStorage.setItem(duplicateKey, String(Date.now()));
+          form.reset();
+          startedAtField.value = String(Date.now());
+          pageUrlField.value = window.location.href;
+          userAgentField.value = navigator.userAgent;
+          clearAllErrors();
+          syncRole(role);
+          setCurrentStep(1);
+          setStatus(
+            "success",
+            result.message || "¡Listo! Tu postulación se envió correctamente y ya quedó registrada para el equipo.",
+          );
+          fieldRefs.fullName.focus();
+        } catch (error) {
+          const isAbort = error.name === "AbortError";
+          setStatus(
+            "error",
+            isAbort
+              ? "La solicitud tardó demasiado y la cancelamos. Revisa tu conexión e inténtalo otra vez."
+              : error.message || "Tuvimos un error de red. Inténtalo nuevamente en unos minutos.",
+          );
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = ROLE_COPY[roleField.value].submitLabel;
+        }
+      });
+
+      syncRole("content");
+      setCurrentStep(1);
+    </script>
+  </body>
 </html>
