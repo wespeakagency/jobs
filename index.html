@@ -782,7 +782,7 @@
           <input type="hidden" name="userAgent" id="user-agent" value="" />
 
           <div class="hidden-field" aria-hidden="true">
-            <label for="company">Si eres humano, dejá este campo vacío</label>
+            <label for="company">Si eres humano, deja este campo vacío</label>
             <input type="text" id="company" name="company" tabindex="-1" autocomplete="off" />
           </div>
 
@@ -907,7 +907,7 @@
                   name="aiBrief"
                   rows="4"
                   class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
-                  placeholder="Cómo usás IA"
+                  placeholder="Cómo usas IA"
                 ></textarea>
                 <p id="ai-brief-help" class="hidden mt-2 text-xs text-white/35"></p>
                 <p id="error-aiBrief" class="hidden mt-2 text-xs text-red-300"></p>
@@ -944,7 +944,7 @@
                 minlength="20"
                 rows="3"
                 class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
-                placeholder="Eso que elevás en un equipo"
+                placeholder="Eso que elevas en un equipo"
               ></textarea>
               <p id="error-superpower" class="hidden mt-2 text-xs text-red-300"></p>
             </div>
@@ -963,7 +963,7 @@
                 minlength="40"
                 rows="5"
                 class="w-full rounded-[20px] border border-white/12 bg-black/35 px-4 py-4 text-white placeholder:text-white/25 focus:outline-none focus:border-white/35"
-                placeholder="Contanos tu proceso"
+                placeholder="Describe tu proceso"
               ></textarea>
               <p id="role-question-help" class="hidden mt-2 text-xs text-white/35"></p>
               <p id="error-roleQuestion" class="hidden mt-2 text-xs text-red-300"></p>
@@ -1046,16 +1046,16 @@
           summary: "Portfolio, piezas y criterio creativo.",
           evidenceLabel: "Portafolio y/o links a piezas/cuentas creadas por ti *",
           evidencePlaceholder: "Links a portfolio, reels, cuentas o piezas",
-          evidenceHelp: "Si podés, priorizá video.",
+          evidenceHelp: "Si puedes, prioriza video.",
           aiBriefLabel: "Brief IA · opcional",
-          aiBriefPlaceholder: "Cómo usás IA en tu proceso",
+          aiBriefPlaceholder: "Cómo usas IA en tu proceso",
           aiBriefHelp: "",
           aiProjectsLabel: "Proyectos IA · opcional",
           aiProjectsPlaceholder: "Links o casos con IA",
           aiProjectsHelp: "",
           roleQuestionLabel: "Caso creativo *",
           roleQuestionPlaceholder:
-            "Contanos una pieza o proyecto: objetivo, proceso, herramientas y aprendizaje.",
+            "Describe una pieza o proyecto: objetivo, proceso, herramientas y aprendizaje.",
           roleQuestionHelp: "",
           submitLabel: "Enviar postulación a Contenido + IA",
         },
@@ -1067,7 +1067,7 @@
           evidencePlaceholder: "Links o casos de sistemas, SOPs, minutas o tableros",
           evidenceHelp: "Puede ser link público o caso bien explicado.",
           aiBriefLabel: "IA en tu operación · opcional",
-          aiBriefPlaceholder: "Cómo usás IA en seguimiento o documentación",
+          aiBriefPlaceholder: "Cómo usas IA en seguimiento o documentación",
           aiBriefHelp: "",
           aiProjectsLabel: "Casos/proyectos IA · opcional",
           aiProjectsPlaceholder: "Links o casos operativos con IA",
@@ -1386,7 +1386,7 @@
         if (aiBriefValue.length > 0 && startsWithNumber(aiBriefValue)) {
           errors.aiBrief = "Este campo no puede empezar con un número.";
         } else if (aiBriefValue.length > 0 && aiBriefValue.length < 20) {
-          errors.aiBrief = "Si vas a contar cómo usás IA, danos un poco más de contexto.";
+          errors.aiBrief = "Si vas a explicar cómo usas IA, agrega un poco más de contexto.";
         }
         if (aiProjectsValue.length > 0 && startsWithNumber(aiProjectsValue)) {
           errors.aiProjects = "Este campo no puede empezar con un número.";
