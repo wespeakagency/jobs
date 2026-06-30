@@ -775,7 +775,7 @@
           id="application-form"
           class="grid gap-5"
           novalidate
-          data-endpoint="__GOOGLE_APPS_SCRIPT_WEB_APP_URL__"
+          data-endpoint="https://script.google.com/macros/s/AKfycbzjtRFRdhs96KUHlr7G8DQhIPpo2YzI4_Lrmp-zwC7-a01nDFdKiK2mABgCA6SSLKl5gg/exec"
         >
           <input type="hidden" name="role" id="role-field" value="content" />
           <input type="hidden" name="startedAt" id="started-at" value="" />
@@ -1131,6 +1131,7 @@
         roleQuestion,
         consent: document.getElementById("consent"),
       };
+      const step2FieldNames = new Set(["evidenceLinks", "aiBrief", "aiProjects"]);
 
       const WIZARD_META = {
         1: {
@@ -1238,6 +1239,12 @@
         const normalized = String(value || "");
         if (!startsWithNumber(normalized)) return normalized;
         return normalized.replace(/^\s*\d+\s*/, "");
+      }
+
+      function getProjectedValue(field, insertedText) {
+        const start = field.selectionStart ?? field.value.length;
+        const end = field.selectionEnd ?? field.value.length;
+        return `${field.value.slice(0, start)}${insertedText}${field.value.slice(end)}`;
       }
 
       function shouldMarkFieldValid(name, value) {
@@ -1516,6 +1523,36 @@
       });
 
       Object.entries(fieldRefs).forEach(([name, field]) => {
+        if (step2FieldNames.has(name)) {
+          field.addEventListener("beforeinput", (event) => {
+            if (!event.inputType?.startsWith("insert")) return;
+
+            const insertedText = event.data ?? "";
+            if (!insertedText) return;
+
+            const nextValue = getProjectedValue(field, insertedText);
+            if (startsWithNumber(nextValue)) {
+              event.preventDefault();
+            }
+          });
+
+          field.addEventListener("paste", (event) => {
+            const pastedText = event.clipboardData?.getData("text") ?? "";
+            if (!pastedText) return;
+
+            const nextValue = getProjectedValue(field, pastedText);
+            if (startsWithNumber(nextValue)) {
+              event.preventDefault();
+              field.setRangeText(
+                removeLeadingNumberPrefix(nextValue),
+                0,
+                field.value.length,
+                "end",
+              );
+            }
+          });
+        }
+
         const eventName = field.type === "checkbox" ? "change" : "input";
         field.addEventListener(eventName, () => {
           if (name === "fullName") {
